@@ -1,0 +1,91 @@
+[2024-09-19 14:37:03,306][ WARN][       ti5mcl.cpp:177 ] ti5Motor(canid:) created using hardware settings
+[2024-09-19 14:37:19,543][ WARN][       ti5mcl.cpp:177 ] ti5Motor(canid:) created using hardware settings
+[2024-09-19 14:48:21,089][ INFO][       ti5mcl.cpp:172 ] Initialization script loaded successfully
+[2024-09-19 14:48:21,089][ WARN][       ti5mcl.cpp:177 ] ti5Motor(canid:) created using hardware settings
+[2024-09-19 14:54:37,604][ INFO][       ti5mcl.cpp:172 ] Initialization script loaded successfully
+[2024-09-19 14:55:37,716][ INFO] Initialization script loaded successfully
+[2024-09-19 14:56:53,256][ INFO] Initialization script loaded successfully
+[2024-09-19 15:07:53,989][ INFO] Initialization script loaded successfully
+[2024-09-19 15:07:53,990][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:08:48,128][ INFO] Initialization script loaded successfully
+[2024-09-19 15:08:48,129][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:08:50,027][ INFO] Initialization script loaded successfully
+[2024-09-19 15:08:51,247][ INFO] Initialization script loaded successfully
+[2024-09-19 15:08:51,247][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:37,513][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:37,514][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:38,394][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:38,395][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:38,682][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:38,682][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:38,926][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:38,927][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:39,100][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:39,101][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:39,272][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:39,272][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:39,463][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:39,464][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:39,634][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:39,635][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:40,677][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:40,677][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:09:41,427][ INFO] Initialization script loaded successfully
+[2024-09-19 15:09:41,428][ WARN] ti5Motor(canid:) created using hardware settings
+[2024-09-19 15:13:08,308][ INFO] Initialization script loaded successfully
+[2024-09-19 15:13:08,308][ WARN] ti5Motor(canid:%d) created using hardware settings
+[2024-09-19 15:16:28,777][ INFO] Initialization script loaded successfully
+[2024-09-19 15:16:28,778][ WARN] ti5Motor(canid:%d5) created using hardware settings
+[2024-09-19 15:18:35,141][ INFO] Initialization script loaded successfully
+[2024-09-19 15:18:35,141][ WARN] ti5Motor(canid:%d5) created using hardware settings
+[2024-09-19 15:18:41,234][ INFO] Initialization script loaded successfully
+[2024-09-19 15:18:41,234][ WARN] ti5Motor(canid:%d5) created using hardware settings
+[2024-09-19 15:25:43,467][ INFO] Initialization script loaded successfully
+[2024-09-19 15:25:43,467][ WARN] ti5Motor(canid:1) created using hardware settings
+[2024-09-19 16:43:55,034][ INFO] Initialization script loaded successfully
+[2024-09-19 16:43:55,034][ WARN] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 08:49:34,694][ INFO] Initialization script loaded successfully
+[2024-09-20 08:49:34,695][ WARN] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 08:50:08,388][ERROR] Command execution failed with status: 127
+[2024-09-20 08:50:08,388][ WARN] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 08:50:49,629][ERROR] Failed to execute command.
+[2024-09-20 08:50:49,629][ERROR] Command execution failed with status: 127
+[2024-09-20 08:50:49,629][ WARN] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 09:16:51,300][ WARN] shexec failed with status 32512
+[2024-09-20 09:16:51,301][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 14:41:34,727][ WARN] shexec failed with status 32512
+[2024-09-20 14:41:34,728][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 14:41:38,651][ WARN] shexec failed with status 32512
+[2024-09-20 14:41:38,651][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 14:43:45,311][ WARN] shexec failed with status 32512
+[2024-09-20 14:43:45,311][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:27:34,360][ WARN] shexec failed with status 32512
+[2024-09-20 15:27:34,361][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:27:47,501][ WARN] shexec failed with status 32512
+[2024-09-20 15:27:47,502][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:28:47,632][ WARN] shexec failed with status 32512
+[2024-09-20 15:28:47,632][ERROR] preprocessing failed to exec
+[2024-09-20 15:28:47,632][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:29:23,354][ WARN] shexec failed with status 32512
+[2024-09-20 15:29:23,354][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:31:19,300][ INFO] Command execution completed successfully.
+[2024-09-20 15:31:19,300][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:32:16,381][ WARN] shexec failed with status 32256
+[2024-09-20 15:32:53,705][ WARN] shexec failed with status 32512
+[2024-09-20 15:33:29,012][ WARN] shexec failed with status 32512
+[2024-09-20 15:33:29,012][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:51:20,854][ WARN] shexec failed with status 32512
+[2024-09-20 15:52:24,211][ WARN] shexec failed with status 32512
+[2024-09-20 15:52:24,211][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:56:12,434][ WARN] shexec failed with status 32512
+[2024-09-20 15:56:12,434][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:59:15,612][ WARN] shexec failed with status 32512
+[2024-09-20 15:59:15,619][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 15:59:41,748][ INFO] Command execution completed successfully.
+[2024-09-20 15:59:41,754][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 16:19:57,383][ INFO] Command execution completed successfully.
+[2024-09-20 16:19:57,389][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 16:20:23,568][ INFO] Command execution completed successfully.
+[2024-09-20 16:20:23,575][ INFO] ti5Motor(canid:1) created using hardware settings
+[2024-09-20 16:20:29,182][ INFO] Command execution completed successfully.
+[2024-09-20 16:20:29,188][ INFO] ti5Motor(canid:1) created using hardware settings
