@@ -223,11 +223,15 @@ void getParameter(FunctionCodeTabSend1Receive4 code);
 void setParameter(FunctionCodeTabSend1Receive0 code);
 void getParameter(FunctionCodeTabSend1Receive8 code);//csp
 
-
-int32_t getParameter(FunctionCodeTabSend5Receive4 code);
+void setParameter(FunctionCodeTabSend5Receive0 code,int32_t value);
 void setParameter(FunctionCodeTabSend5Receive4 code, int32_t value);
-void setParameter(FunctionCodeTab6 code, int32_t value);
-void setParameter(FunctionCodeTab7 code, int32_t value);
+void setParameter(FunctionCodeTabSend5Receive8 code, int32_t value);
+
+void setParameter(FunctionCodeTabSend6Receive4 code, int64_t value);
+void setParameter(FunctionCodeTabSend6Receive7 code, int64_t value);
+
+void setParameter(FunctionCodeTabSend7Receive5 code, int64_t value);
+void setParameter(FunctionCodeTabSend7Receive6 code, int64_t value);
 
 
 uint8_t getCanId(void);
@@ -245,5 +249,13 @@ int32_t _targetCurrent;
 int32_t _velocity;
 int32_t _position;
 
+uint8_t _uctemp8;
+uint16_t _ustemp16;
+uint32_t _uitemp32;
+uint64_t _ultemp64;
+int8_t _sctemp8;
+int16_t _sstemp16;
+int32_t _sitemp32;
+int64_t _sltemp64;
 };
 #endif // TI5MCL_H_INCLUDED
