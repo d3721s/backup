@@ -21,7 +21,7 @@ public:
         }
     }
 
-    bool init(void) {
+    void init(void) {
         struct sockaddr_can addr;
         struct ifreq ifr;
         sockCanHandle = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -32,34 +32,25 @@ public:
         addr.can_ifindex = ifr.ifr_ifindex;
 
         bind(sockCanHandle, (struct sockaddr *)&addr, sizeof(addr));
-        return true;
     }
 
-    bool sendFrame(const can_frame& frame) {
+    void sendFrame(const can_frame& frame) {
         if (sockCanHandle == -1) {
             std::cerr << "Socket not initialized" << std::endl;
-            return false;
         }
 
         if (send(sockCanHandle, &frame, sizeof(frame), 0) < 0) {
             std::cerr << "Failed to send CAN frame" << std::endl;
-            return false;
         }
-
-        return true;
     }
 
-    bool receiveFrame(can_frame& frame) {
+    void receiveFrame(can_frame& frame) {
         if (sockCanHandle == -1) {
             std::cerr << "Socket not initialized" << std::endl;
-            return false;
         }
         if (recv(sockCanHandle, &frame, sizeof(frame), 0) < 0) {
             std::cerr << "Failed to receive CAN frame" << std::endl;
-            return false;
         }
-
-        return true;
     }
 
 private:

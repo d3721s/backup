@@ -1,5 +1,5 @@
 #include "interface.h"
-CanBus motorCan("vcan0");
+CanBus motorCan("can0");
 
 void interfaceInit(void)
 {
@@ -11,7 +11,7 @@ void interfaceInit(void)
     );
 }
 
-int32_t interfaceGetParameter1(ti5Motor* motorHandle, ti5Motor::FunctionCodeTab1 code)
+int32_t interfaceGetParameter1(ti5Motor* motorHandle, ti5Motor::FunctionCodeTabSend1Receive4 code)
 {
     can_frame frameSend;
     can_frame frameReceive;
@@ -24,7 +24,7 @@ int32_t interfaceGetParameter1(ti5Motor* motorHandle, ti5Motor::FunctionCodeTab1
     #warning "TODO : not frameReceive.data[0]"
 }
 
-int32_t interfaceGetParameter5(ti5Motor* motorHandle, ti5Motor::FunctionCodeTab5 code)
+int32_t interfaceGetParameter5(ti5Motor* motorHandle, ti5Motor::FunctionCodeTabSend5Receive4 code)
 {
     can_frame frameSend;
     can_frame frameReceive;
@@ -36,16 +36,15 @@ int32_t interfaceGetParameter5(ti5Motor* motorHandle, ti5Motor::FunctionCodeTab5
     return frameReceive.data[0];
     #warning "TODO : not frameReceive.data[0]"
 }
-void interfaceSetParameter1(ti5Motor* motorHandle,ti5Motor::FunctionCodeTab1 code)
+void interfaceSetParameter1(ti5Motor* motorHandle,ti5Motor::FunctionCodeTabSend1Receive4 code)
 {
     can_frame frameSend;
     frameSend.can_id = motorHandle->getCanId();
     frameSend.can_dlc = 1;
     frameSend.data[0] = static_cast<uint8_t>(code);
     motorCan.sendFrame(frameSend);
-
 }
-void interfaceSetParameter5(ti5Motor* motorHandle,ti5Motor::FunctionCodeTab5 code,uint32_t value)
+void interfaceSetParameter5(ti5Motor* motorHandle,ti5Motor::FunctionCodeTabSend5Receive4 code,uint32_t value)
 {
     can_frame frameSend;
     frameSend.can_id = motorHandle->getCanId();

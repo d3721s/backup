@@ -86,11 +86,12 @@ int32_t _positionOffset;
 class ti5Motor
 {
 public:
+//基础方法
 ti5Motor(void);//空电机,预留
 ti5Motor(uint8_t canId);//使用硬件设置初始化软件对象
-ti5Motor(uint8_t canId,ti5MotorSetupData* deviceData);   //使用软件设置初始化软件对象//canId为当前canId，deviceData->canId为将要设置的canId！
+ti5Motor(uint8_t canId,ti5MotorSetupData* deviceData);   //使用软件设置初始化软件对象//canId为当前canId，deviceData->_canId为将要设置的canId！
 ~ti5Motor(void) = default;
-
+//常用方法
 enum class MotorMode
 {
     modeUndefined = -1,
@@ -101,98 +102,133 @@ enum class MotorMode
 };
 MotorMode getMotorMode(void);
 void setMotorMode(MotorMode mode);
-enum class FunctionCodeTab1//get
+
+//全部方法
+enum class FunctionCodeTabSend1Receive0 //set
 {
-    modeCode = 3,
-    currentCode = 4,
-    targetCurrentCode = 5,
-    velocityCode = 6,
-    targetVelocityCode = 7,
-    positionCode = 8,
-    targetPositionCode = 9,
-    errorCode = 10,
-    speedLoopKpCode = 16,
-    speedLoopKiCode = 17,
-    speedLoopKdCode = 51,
-    positionLoopKpCode = 18,
-    positionLoopKiCode = 52,
-    positionLoopKdCode = 19,
-    busVoltageCode = 20,
-    maxPositiveCurrentCode = 53,
-    maxNegativeCurrentCode = 54,
-    maxPositiveVelocityCode = 24,
-    maxNegativeVelocityCode = 25,
-    maxPositivePositionCode = 26,
-    maxNegativePositionCode = 27,
-    maxPositiveAccelerationCode = 22,
-    maxNegativeAccelerationCode = 23,
-    motorTemperatureCode = 49,
-    driverTemperatureCode = 50,
-    currentLoopKpCode = 97,
-    currentLoopKiCode = 98,
-    currentLoopKdCode = 99,
-    motorModelCode = 100,
-    motorVersionNumberCode = 101,
-    motorSoftwareVersionNumberCode = 102,
-    positionOffsetCode = 84,
-    cyclicSynchronousPositionCode = 65,
-    encoderVoltageCode = 120,
-    encoderStatusCode = 121,
-    overVoltageThresholdCode = 138,
-    lowVoltageThresholdCode = 140,
-    motorOverTemperatureThresholdCode = 143,
-    driverOverTemperatureThresholdCode = 147,
+    setStopMotorCode = 2, // 停止电机
+    setRestoreFromFlashCode = 13,     // 从Flash恢复参数
+    setSaveToFlashCode = 14,          // 保存参数到Flash
+    setRestorFactoryCode = 15,            // 恢复出厂设置
+//  setStoreToFactoryCode = 31,         // 储存参数到出厂
 };
-enum class FunctionCodeTab5//set
+enum class FunctionCodeTabSend1Receive4 // get
 {
-    currentModeCode = 28,
-    velocityModeCode = 29,
-    positionModeCode = 30,
-    currentCode = 66,
-    velocityCode = 67,
-    positionCode = 68,
-    maxPositiveCurrentCode = 32,
-    maxNegativeCurrentCode = 33,
-
-    maxPositiveAccelerationCode = 34,
-    maxNegativeAccelerationCode = 35,
-    maxPositiveVelocityCode = 36,
-    maxNegativeVelocityCode = 37,
-    maxPositivePositionCode = 38,
-    maxNegativePositionCode = 39,
-    speedLoopKpCode = 41,
-    speedLoopKiCode = 42,
-    positionLoopKpCode = 43,
-    positionLoopKdCode = 45,
-    canIdCode = 46,
-    stopMotorCode = 2,
-    positionOffsetCode = 83,
-    baudRateCode = 63,
-
+    getModeCode = 3,                  // 模式
+    getCurrentCode = 4,               // 当前电流
+    getTargetCurrentCode = 5,         // 目标电流
+    getVelocityCode = 6,              // 速度
+    getTargetVelocityCode = 7,        // 目标速度
+    getPositionCode = 8,              // 位置
+    getTargetPositionCode = 9,        // 目标位置
+    getErrorCode = 10,                // 错误
+    getSpeedLoopKpCode = 16,          // 速度环P增益
+    getSpeedLoopKiCode = 17,          // 速度环I增益
+    getPositionLoopKpCode = 18,       // 位置环P增益
+    getPositionLoopKdCode = 19,       // 位置环D增益
+    getBusVoltageCode = 20,           // 总线电压
+    getMaxPositiveAccelerationCode = 22,  // 最大正向加速度
+    getMaxNegativeAccelerationCode = 23,  // 最大负向加速度
+    getMaxPositiveVelocityCode = 24,      // 最大正向速度
+    getMaxNegativeVelocityCode = 25,      // 最大负向速度
+    getMaxPositivePositionCode = 26,      // 最大正向位置
+    getMaxNegativePositionCode = 27,      // 最大负向位置
+    getMotorTemperatureCode = 49,         // 电机温度
+    getDriverTemperatureCode = 50,        // 驱动器温度
+    getSpeedLoopKdCode = 51,          // 速度环D增益
+    getPositionLoopKiCode = 52,       // 位置环I增益
+    getMaxPositiveCurrentCode = 53,       // 最大正向电流
+    getMaxNegativeCurrentCode = 54,       // 最大负向电流
+    getPositionOffsetCode = 84,       // 位置偏移
+    getCurrentLoopKpCode = 97,        // 电流环P增益
+    getCurrentLoopKiCode = 98,        // 电流环I增益
+    getCurrentLoopKdCode = 99,        // 电流环D增益
+    getMotorModelCode = 100,              // 电机型号
+    getMotorVersionNumberCode = 101,      // 电机版本号
+    getMotorSoftwareVersionNumberCode = 102, // 电机软件版本号
+    getEncoderVoltageCode = 120,          // 编码器电压
+    getEncoderStatusCode = 121,           // 编码器状态
+    getOverVoltageThresholdCode = 138,    // 过压阈值
+    getLowVoltageThresholdCode = 140,     // 低压阈值
+    getMotorOverTemperatureThresholdCode = 143, // 电机过温阈值
+    getDriverOverTemperatureThresholdCode = 147  // 驱动器过温阈值
 };
-enum class FunctionCodeTab6//set
+enum class FunctionCodeTabSend1Receive8 //get
+{
+    getCyclicSynchronousPositionCode = 65, // 循环同步位置
+};
+enum class FunctionCodeTabSend5Receive0
+{ 
+    setCurrentModeCode = 28, // 电流模式
+};
+enum class FunctionCodeTabSend5Receive4 // set
+{
+    setStopMotorCode = 2, // 停止电机
+    setVelocityModeCode = 29, // 速度模式
+    setPositionModeCode = 30, // 位置模式
+    setMaxPositiveCurrentCode = 32, // 最大正向电流
+    setMaxNegativeCurrentCode = 33, // 最大负向电流
+    setMaxPositiveAccelerationCode = 34, // 最大正向加速度
+    setMaxNegativeAccelerationCode = 35, // 最大负向加速度
+    setMaxPositiveVelocityCode = 36, // 最大正向速度
+    setMaxNegativeVelocityCode = 37, // 最大负向速度
+    setMaxPositivePositionCode = 38, // 最大正向位置
+    setMaxNegativePositionCode = 39, // 最大负向位置
+    setSpeedLoopKpCode = 41, // 速度环比例增益
+    setSpeedLoopKiCode = 42, // 速度环积分增益
+    setPositionLoopKpCode = 43, // 位置环比例增益
+    setPositionLoopKiCode = 44, // 位置环积分增益
+    setPositionLoopKdCode = 45, // 位置环微分增益
+    setCanIdCode = 46, // CAN ID
+    setBaudRateCode = 63, // 波特率
+    // setEncoderZeroCode = 80, // 设置编码器零点
+    setPositionOffsetCode = 83, // 位置偏移
+    // setDualEncoderCode = 85, // 双编码器
+    setOverVoltageThresholdCode = 135,  // 过压阈值
+    setLowVoltageThresholdCode = 137, // 低压阈值
+};
+enum class FunctionCodeTabSend5Receive8 // set
+{
+    setCurrentCode = 66, // 实际电流
+    setVelocityCode = 67, // 实际速度
+    setPositionCode = 68, // 实际位置
+};
+
+enum class FunctionCodeTabSend6Receive4 // set
 {
 
 };
-enum class FunctionCodeTab7//set
-{
-
-};
-enum class FunctionCodeTab8//set
+enum class FunctionCodeTabSend6Receive7 // set
 {
 
 };
 
-int32_t getParameter(FunctionCodeTab1 code);
-void setParameter(FunctionCodeTab1 code);
-int32_t getParameter(FunctionCodeTab5 code);
-void setParameter(FunctionCodeTab5 code, int32_t value);
+
+enum class FunctionCodeTabSend7Receive55 // set
+{
+
+};
+enum class FunctionCodeTabSend7Receive6 // set
+{
+
+};
+enum class FunctionCodeTabSend8Receive8 // set
+{
+
+};
 
 
+
+void getParameter(FunctionCodeTabSend1Receive4 code);
+void setParameter(FunctionCodeTabSend1Receive0 code);
+void getParameter(FunctionCodeTabSend1Receive8 code);//csp
+
+
+int32_t getParameter(FunctionCodeTabSend5Receive4 code);
+void setParameter(FunctionCodeTabSend5Receive4 code, int32_t value);
 void setParameter(FunctionCodeTab6 code, int32_t value);
 void setParameter(FunctionCodeTab7 code, int32_t value);
 
-void setStopMode(void);
 
 uint8_t getCanId(void);
 private:

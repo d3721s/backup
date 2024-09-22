@@ -173,6 +173,7 @@ ti5Motor::ti5Motor(uint8_t canId)
     _canId=canId;
     preprocess();
     interfaceInit();
+    interfaceSetParameter1(,);
     //restoreConfig();
     tlog_info << "ti5Motor(canid:"<< std::to_string(canId) <<") created using hardware settings"<<std::endl;
 }
@@ -181,22 +182,23 @@ ti5Motor::ti5Motor(uint8_t canId,ti5MotorSetupData* deviceData)
 {
     _deviceData = deviceData;
     preprocess();
+    interfaceInit();
     tlog_info << "ti5Motor created canID:" << std::to_string(deviceData->getCanId()) << " name:" << deviceData->getName() <<"using software settings"<< std::endl;
 }
 
-int32_t ti5Motor::getParameter(FunctionCodeTab1 code)
+int32_t ti5Motor::getParameter(FunctionCodeTabSend1Receive4 code)
 {
     tlog_info << "getting parameter " << std::to_string(static_cast<uint8_t>(code)) << std::endl;
     return interfaceGetParameter1(this,code);
 }
-int32_t ti5Motor::getParameter(FunctionCodeTab5 code)
+int32_t ti5Motor::getParameter(FunctionCodeTabSend5Receive4 code)
 {
     tlog_info << "getting parameter " << std::to_string(static_cast<uint8_t>(code)) << std::endl;
     return interfaceGetParameter5(this,code);
 }
 
 
-void ti5Motor::setParameter(FunctionCodeTab1 code)
+void ti5Motor::setParameter(FunctionCodeTabSend1Receive4 code)
 {
     interfaceSetParameter1(this,code);
 }
