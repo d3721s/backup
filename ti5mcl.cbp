@@ -33,6 +33,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-lpthread" />
 				</Linker>
 			</Target>
 			<Target title="static">
@@ -59,14 +60,15 @@
 		<Unit filename="demo.cpp">
 			<Option target="demo" />
 		</Unit>
-		<Unit filename="interface.h" />
-		<Unit filename="interrface.cpp" />
 		<Unit filename="ti5mcl.cpp" />
 		<Unit filename="ti5mcl.h" />
 		<Unit filename="tlog.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="tlog.h" />
-		<Extensions />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

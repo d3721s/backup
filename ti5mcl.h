@@ -36,7 +36,7 @@ public:
     canid_t getCanId(void) const;
     std::string getName(void) const;
 
-    uint8_t getReductionRatio(void) const; 
+    uint8_t getReductionRatio(void) const;
 
     int32_t getMaxPositiveCurrent(void) const;
     int32_t getMaxNegativeCurrent(void) const;
@@ -54,7 +54,7 @@ public:
 
     void setCanId(canid_t canId); //仅空电机，其他情况不建议使用
     void setName(std::string name);
-    void setReductionRatio(reductionRatio reductionRatio); //仅空电机，其他情况不建议使用
+    void setReductionRatio(uint8_t reductionRatio); //仅空电机，其他情况不建议使用
 
     void setMaxPositiveCurrent(int32_t maxPositiveCurrent);
     void setMaxNegativeCurrent(int32_t maxNegativeCurrent);
@@ -135,7 +135,7 @@ public:
         uint8_t driverTemperatureError:1;
         uint8_t driverChipError:1;
     };
-    
+
     int32_t getErrorStatus();
     // int32_t getMotorTemperature();
     // int32_t getDriverTemperature();//建议使用autoMonitor()
@@ -157,7 +157,6 @@ public:
     bool quickMoveVelocity(int16_t perSecondDegree);
     bool quickMoveJog();
     //自定义
-    bool 
     #warning "TODO:"
     //托管
     bool autoMonitor();

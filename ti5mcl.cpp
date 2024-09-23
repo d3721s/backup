@@ -2,7 +2,7 @@
 #include "tlog.h"
 #include "canglue.h"
 ti5MotorSetupData::ti5MotorSetupData(uint8_t canId, std::string name,
-                                     // uint8_t reductionRatio,
+                                     uint8_t reductionRatio,
                                      int32_t maxPositiveCurrent, int32_t maxNegativeCurrent,
                                      int32_t maxPositiveAcceleration, int32_t maxNegativeAcceleration,
                                      int32_t maxPositiveVelocity, int32_t maxNegativeVelocity,
@@ -11,7 +11,7 @@ ti5MotorSetupData::ti5MotorSetupData(uint8_t canId, std::string name,
 {
     _canId = canId;
     _name = name;
-    //_reductionRatio = reductionRatio;
+    _reductionRatio = reductionRatio;
     _maxPositiveCurrent = maxPositiveCurrent;
     _maxNegativeCurrent = maxNegativeCurrent;
     _maxPositiveAcceleration = maxPositiveAcceleration;
@@ -179,13 +179,12 @@ ti5Motor::ti5Motor(void)
     tlog_warn << "void ti5Motor created" << std::endl;
 }
 
-ti5Motor::ti5Motor(uint8_t canId)
+ti5Motor::ti5Motor(uint8_t canId, reductionRatio reductionRatioValue)
 {
     _canId = canId;
     preprocess();
     canInit();
     writeRegister(FunctionCodeTabSend1Receive0::setRestoreFromFlashCode);
-    // restoreConfig();
     tlog_info << "ti5Motor(canid:" << std::to_string(canId) << ") created using hardware settings" << std::endl;
 }
 
@@ -439,7 +438,6 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t valu
     tlog_debug << "receive" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[5]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
     return true;
-
 }
 
 bool ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value)

@@ -8,6 +8,8 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <fcntl.h> // For O_NONBLOCK
+#include <mutex>
+#include <thread>
 class CanBus
 {
 public:
@@ -36,7 +38,6 @@ public:
         addr.can_ifindex = ifr.ifr_ifindex;
 
         bind(sockCanHandle, (struct sockaddr *)&addr, sizeof(addr));
-        // 设置套接字为非阻塞模式
         int flags = fcntl(sockCanHandle, F_GETFL, 0);
         if (fcntl(sockCanHandle, F_SETFL, flags | O_NONBLOCK) < 0)
         {
@@ -54,7 +55,7 @@ public:
             std::cerr << "Socket not initialized" << std::endl;
             return false;
         }
-
+        std::lock_guard<std::mutex> lock(canMutex);  // 自动加锁
         if (send(sockCanHandle, &frame, sizeof(frame), 0) < 0)
         {
             std::cerr << "Failed to send CAN frame" << std::endl;
@@ -70,6 +71,8 @@ public:
             std::cerr << "Socket not initialized" << std::endl;
             return false;
         }
+
+        std::lock_guard<std::mutex> lock(canMutex);  // 自动加锁
         if (recv(sockCanHandle, &frame, sizeof(frame), 0) < 0)
         {
             std::cerr << "Failed to receive CAN frame" << std::endl;
@@ -79,6 +82,8 @@ public:
     }
 
 private:
+
+    std::mutex canMutex;
     std::string device;
     int sockCanHandle;
 };
