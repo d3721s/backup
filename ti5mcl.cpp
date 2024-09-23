@@ -182,6 +182,7 @@ ti5Motor::ti5Motor(void)
 ti5Motor::ti5Motor(uint8_t canId, reductionRatio reductionRatioValue)
 {
     _canId = canId;
+    _reductionRatio=reductionRatioValue;
     preprocess();
     canInit();
     writeRegister(FunctionCodeTabSend1Receive0::setRestoreFromFlashCode);
@@ -211,34 +212,58 @@ ti5Motor::reductionRatio ti5Motor::getReductionRatio(void)
 /// @return
 bool ti5Motor::getMotorMode(MotorMode* mode)
 {
-    readRegister(FunctionCodeTabSend1Receive4::getModeCode);
+    if(readRegister(FunctionCodeTabSend1Receive4::getModeCode)==false)
+    {
+        tlog_error << "getMotorMode failed" << std::endl;
+        return false;
+    }
     tlog_info << "getMotorMode: " << std::to_string(_uitemp) << std::endl;
-    return static_cast<MotorMode>(_uitemp);
+    *mode = static_cast<MotorMode>(_uitemp);
+    return true;
 }
 bool ti5Motor::setMotorMode(MotorMode mode)
 {
-    MotorMode oldMode = getMotorMode();
+    MotorMode oldMode;
+    if(getMotorMode(&oldMode)==false)
+        return false;
     if(mode != oldMode)
     {
         switch(mode)
         {
         case MotorMode::modeStop:
             if(writeRegister(FunctionCodeTabSend1Receive0::setStopModeCode) == false)
-                return false;
+        {
+            tlog_error << "setMotorMode failed" << std::endl;
+            return false;
+        }
         case MotorMode::modeCurrent:
             if(writeRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, 0) == false)
-                return false;
+        {
+            tlog_error << "setMotorMode failed" << std::endl;
+            return false;
+        }
         case MotorMode::modeVelocity:
             if(writeReadRegister(FunctionCodeTabSend5Receive4::setVelocityModeCode, 0) == false)
-                return false;
+        {
+            tlog_error << "setMotorMode failed" << std::endl;
+            return false;
+        }
         case MotorMode::modePosition:
             if(writeReadRegister(FunctionCodeTabSend5Receive4::setPositionModeCode, 0) == false)
-                return false;
+        {
+            tlog_error << "setMotorMode failed" << std::endl;
+            return false;
+        }
         default:
             tlog_error << "unsupported mode:" << std::to_string(static_cast<uint8_t> (mode)) << std::endl;
             return false;
         }
-        MotorMode newMode = getMotorMode();
+        MotorMode newMode;
+        if(getMotorMode(&newMode)==false)
+        {
+            tlog_error << "setMotorMode failed" << std::endl;
+            return false;
+        }
         if(newMode != mode)
         {
             tlog_error << "setMotorMode failed" << std::endl;
@@ -266,7 +291,7 @@ bool ti5Motor::getTargetVelocity(int32_t* ){}
 bool ti5Motor::getPosition(int32_t* ){}
 bool ti5Motor::getTargetPosition(int32_t* ){}
 bool ti5Motor::getErrorStatus(int32_t* ){}
-bool ti5Motor::getMotorTemperature(){}
+bool ti5Motor::getMotorTemperature(int32_t*){}
 bool ti5Motor::getDriverTemperature(int32_t* ){}//建议使用autoMonitor()
 bool ti5Motor::getCyclicSynchronousPosition(int32_t* ){}
 bool ti5Motor::setTargetCurrent(int32_t targetCurrent){}
