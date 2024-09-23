@@ -113,8 +113,8 @@ public:
     };
     bool getMotorMode(void);
     bool setMotorMode(MotorMode mode);
-    bool getCurrent();
-    bool getTargetCurrent();
+    bool getCurrent(int32_t* current);
+    bool getTargetCurrent(int32_t* targetCurrent);
     bool getVelocity(int32_t* velocity)
     bool getTargetVelocity(int32_t* targetVelocity);
     bool getPosition(int32_t* position);
@@ -137,10 +137,11 @@ public:
         uint8_t driverChipError: 1;
     };
 
-    bool getErrorStatus();
-    bool getMotorTemperature();
-    bool getDriverTemperature();//建议使用autoMonitor()
-    bool getCyclicSynchronousPosition();
+    bool getErrorStatus(int32_t* errorStatus);
+    bool getMotorTemperature(int32_t* motorTemperature);
+    bool getDriverTemperature(int32_t* driverTemperature);//建议使用autoMonitor()
+    bool getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition);
+    #warning "TODO int32->int16*2"
     bool setTargetCurrent(int32_t targetCurrent);
     bool setTargetVelocity(int32_t targetVelocity);
     bool setTargetPosition(int32_t targetPosition);
