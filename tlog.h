@@ -19,7 +19,8 @@
 extern "C" {
 #endif /*__cplusplus */
 
-typedef enum {
+typedef enum
+{
     TLOG_DEBUG = 0,
     TLOG_INFO = 1,
     TLOG_NOTICE = 2,
@@ -30,7 +31,8 @@ typedef enum {
     TLOG_END = 7
 } tlog_level;
 
-struct tlog_time {
+struct tlog_time
+{
     int year;
     unsigned int usec;
     unsigned char mon;
@@ -72,7 +74,8 @@ struct tlog_time {
 /* Not output prefix  */
 #define TLOG_FORMAT_NO_PREFIX (1 << 7)
 
-struct tlog_loginfo {
+struct tlog_loginfo
+{
     tlog_level level;
     const char *file;
     const char *func;
@@ -93,7 +96,7 @@ format: Log formats
 #define tlog(level, format, ...) tlog_ext(level, BASE_FILE_NAME, __LINE__, __func__, NULL, format, ##__VA_ARGS__)
 
 extern int tlog_ext(tlog_level level, const char *file, int line, const char *func, void *userptr, const char *format, ...)
-    __attribute__((format(printf, 6, 7))) __attribute__((nonnull(6)));
+__attribute__((format(printf, 6, 7))) __attribute__((nonnull(6)));
 extern int tlog_vext(tlog_level level, const char *file, int line, const char *func, void *userptr, const char *format, va_list ap);
 
 /* write buff to log file */
@@ -236,7 +239,8 @@ extern void tlog_set_permission(struct tlog_log *log, mode_t file, mode_t archiv
 extern int tlog_stdout_with_color(tlog_level level, const char *buff, int bufflen);
 
 #ifdef __cplusplus
-class Tlog {
+class Tlog
+{
 public:
     Tlog(tlog_level level, const char *file, int line, const char *func, void *userptr)
     {
@@ -266,7 +270,8 @@ private:
     std::ostringstream msg_;
 };
 
-class TlogOut {
+class TlogOut
+{
 public:
     TlogOut(tlog_log *log)
     {
@@ -275,7 +280,8 @@ public:
 
     ~TlogOut()
     {
-        if (log_ == nullptr) {
+        if (log_ == nullptr)
+        {
             return;
         }
 

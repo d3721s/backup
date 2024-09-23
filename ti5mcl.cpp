@@ -1,15 +1,14 @@
 #include "ti5mcl.h"
 #include "tlog.h"
 #include "interface.h"
-
-ti5MotorSetupData::ti5MotorSetupData(uint8_t canId,std::string name,
-                  //uint8_t reductionRatio,
-                  int32_t maxPositiveCurrent,int32_t maxNegativeCurrent,
-                  int32_t maxPositiveAcceleration,int32_t maxNegativeAcceleration,
-                  int32_t maxPositiveVelocity,int32_t maxNegativeVelocity,
-                  int32_t maxPositivePositon,int32_t maxNegativePositon,
-                  int32_t positionOffset
-                  )
+#include "canglue.h"
+ti5MotorSetupData::ti5MotorSetupData(uint8_t canId, std::string name,
+                                     // uint8_t reductionRatio,
+                                     int32_t maxPositiveCurrent, int32_t maxNegativeCurrent,
+                                     int32_t maxPositiveAcceleration, int32_t maxNegativeAcceleration,
+                                     int32_t maxPositiveVelocity, int32_t maxNegativeVelocity,
+                                     int32_t maxPositivePositon, int32_t maxNegativePositon,
+                                     int32_t positionOffset)
 {
     _canId = canId;
     _name = name;
@@ -24,7 +23,7 @@ ti5MotorSetupData::ti5MotorSetupData(uint8_t canId,std::string name,
     _maxNegativePositon = maxNegativePositon;
     _positionOffset = positionOffset;
 }
-uint8_t ti5MotorSetupData::getCanId(void) const
+canid_t  ti5MotorSetupData::getCanId(void) const
 {
     return _canId;
 }
@@ -32,10 +31,10 @@ std::string ti5MotorSetupData::getName(void) const
 {
     return _name;
 }
-//uint8_t ti5MotorSetupData::getReductionRatio(void) const
+// uint8_t ti5MotorSetupData::getReductionRatio(void) const
 //{
-//    return _reductionRatio;
-//}
+//     return _reductionRatio;
+// }
 int32_t ti5MotorSetupData::getMaxPositiveCurrent(void) const
 {
     return _maxPositiveCurrent;
@@ -123,25 +122,25 @@ void ti5MotorSetupData::setPositionOffset(int32_t positionOffset)
     _positionOffset = positionOffset;
 }
 
-
 static void preprocess(void)
 {
     static std::once_flag motorInitializedFlag;
-    std::call_once(motorInitializedFlag,[]
+    std::call_once(motorInitializedFlag, []
     {
-        if(tlog_init("ti5motor.log", 1048576, 8, 0, TLOG_SCREEN|TLOG_SCREEN_COLOR)!=0)
+        if (tlog_init("ti5motor.log", 1048576, 8, 0, TLOG_SCREEN | TLOG_SCREEN_COLOR) != 0)
         {
-           std::cerr << "log system init error" << std::endl;
+            std::cerr << "log system init error" << std::endl;
         }
         tlog_setlevel(TI5MCLLOGLEVEL);
         int status = system("/usr/sh/ti5mclsetup.sh");
         if (status != 0)
         {
-            tlog_warn << "shexec failed with status " << std::to_string(status) << std::endl ;
+            tlog_warn << "shexec failed with status " << std::to_string(status) << std::endl;
         }
         else
         {
-            if (WIFEXITED(status)) {
+            if (WIFEXITED(status))
+            {
                 int exitStatus = WEXITSTATUS(status);
                 if (exitStatus != 0)
                 {
@@ -157,9 +156,15 @@ static void preprocess(void)
                 tlog_warn << "Command did not terminate normally." << std::endl;
             }
         }
+    });
+}
+CanBus motorCan("can0");
+static void canInit(void)
+{
 
-    }
-    );
+    static std::once_flag canInitializedFlag;
+    std::call_once(canInitializedFlag, []
+    { motorCan.init(); });
 }
 
 ti5Motor::ti5Motor(void)
@@ -170,48 +175,195 @@ ti5Motor::ti5Motor(void)
 
 ti5Motor::ti5Motor(uint8_t canId)
 {
-    _canId=canId;
+    _canId = canId;
     preprocess();
-    interfaceInit();
-    interfaceSetParameter1(,);
-    //restoreConfig();
-    tlog_info << "ti5Motor(canid:"<< std::to_string(canId) <<") created using hardware settings"<<std::endl;
+    canInit();
+    writeRegister(FunctionCodeTabSend1Receive0::setRestoreFromFlashCode);
+    // restoreConfig();
+    tlog_info << "ti5Motor(canid:" << std::to_string(canId) << ") created using hardware settings" << std::endl;
 }
 
-ti5Motor::ti5Motor(uint8_t canId,ti5MotorSetupData* deviceData)
+ti5Motor::ti5Motor(uint8_t canId, ti5MotorSetupData *deviceData)
 {
     _deviceData = deviceData;
     preprocess();
-    interfaceInit();
-    tlog_info << "ti5Motor created canID:" << std::to_string(deviceData->getCanId()) << " name:" << deviceData->getName() <<"using software settings"<< std::endl;
+    canInit();
+    tlog_info << "ti5Motor created canID:" << std::to_string(deviceData->getCanId()) << " name:" << deviceData->getName() << "using software settings" << std::endl;
 }
 
-int32_t ti5Motor::getParameter(FunctionCodeTabSend1Receive4 code)
-{
-    tlog_info << "getting parameter " << std::to_string(static_cast<uint8_t>(code)) << std::endl;
-    return interfaceGetParameter1(this,code);
-}
-int32_t ti5Motor::getParameter(FunctionCodeTabSend5Receive4 code)
-{
-    tlog_info << "getting parameter " << std::to_string(static_cast<uint8_t>(code)) << std::endl;
-    return interfaceGetParameter5(this,code);
-}
-
-
-void ti5Motor::setParameter(FunctionCodeTabSend1Receive4 code)
-{
-    interfaceSetParameter1(this,code);
-}
-
-
-uint8_t ti5Motor::getCanId(void)
+canid_t ti5Motor::getCanId(void)
 {
     return _canId;
 }
 
+void ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
+{
+    can_frame frameSend;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 1;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    motorCan.sendFrame(frameSend);
+}
+void ti5Motor::readRegister(FunctionCodeTabSend1Receive4 code)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 1;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sitemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24;
+}
 
+void ti5Motor::readRegister(FunctionCodeTabSend1Receive8 code)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 1;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sltemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
+    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
 
+} // csp
 
+void ti5Motor::writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value)
+{
+    can_frame frameSend;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 5;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint32_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    motorCan.sendFrame(frameSend);
+}
+void ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 5;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint32_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sitemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24;
 
+}
+void ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 5;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint32_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sltemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
+    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
+}
 
+void ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 6;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>40);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sitemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24;
+}
+void ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 6;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>40);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sltemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
+    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48;
+}
 
+void ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 7;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>40);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sltemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
+    | frameReceive.data[4] << 32;
+}
+void ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 7;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>40);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sltemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
+    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40;
+}
+
+void ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value)
+{
+    can_frame frameSend;
+    can_frame frameReceive;
+    frameSend.can_id = this->getCanId();
+    frameSend.can_dlc = 6;
+    frameSend.data[0] = static_cast<uint8_t>(code);
+    frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>40);
+    frameSend.data[7] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>48);
+    motorCan.sendFrame(frameSend);
+    motorCan.receiveFrame(frameReceive);
+    _sltemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
+    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
+}
