@@ -309,13 +309,14 @@ bool ti5Motor::getVelocity(int32_t* velocity)
     return true;
 
 }
-bool ti5Motor::getTargetVelocity(int32_t* ){}
-bool ti5Motor::getPosition(int32_t* ){}
-bool ti5Motor::getTargetPosition(int32_t* ){}
-bool ti5Motor::getErrorStatus(int32_t* ){}
-bool ti5Motor::getMotorTemperature(int32_t*){}
-bool ti5Motor::getDriverTemperature(int32_t* ){}//建议使用autoMonitor()
-bool ti5Motor::getCyclicSynchronousPosition(int32_t* ){}
+bool ti5Motor::getTargetVelocity(int32_t*   velocity){}
+bool ti5Motor::getPosition(int32_t* position){}
+bool ti5Motor::getTargetPosition(int32_t* targetPosition){}
+bool ti5Motor::getErrorStatus(int32_t* errorStatus){}
+bool ti5Motor::getMotorTemperature(int32_t* motorTemperature){}
+bool ti5Motor::getDriverTemperature(int32_t* driverTemperature){}//建议使用autoMonitor()
+bool ti5Motor::getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition){}
+
 bool ti5Motor::setTargetCurrent(int32_t targetCurrent){}
 bool ti5Motor::setTargetVelocity(int32_t targetVelocity){}
 bool ti5Motor::setTargetPosition(int32_t targetPosition){}
