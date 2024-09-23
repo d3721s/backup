@@ -101,7 +101,7 @@ public:
         modePosition = 3,
     };
     MotorMode getMotorMode(void);
-    void setMotorMode(MotorMode mode);
+    bool setMotorMode(MotorMode mode);
 
     //全部方法
     enum class FunctionCodeTabSend1Receive0 //set
@@ -219,21 +219,21 @@ public:
 
 
 
-    void readRegister(FunctionCodeTabSend1Receive4 code);
-    void writeRegister(FunctionCodeTabSend1Receive0 code);
-    void readRegister(FunctionCodeTabSend1Receive8 code);//csp
+    bool readRegister(FunctionCodeTabSend1Receive4 code);
+    bool writeRegister(FunctionCodeTabSend1Receive0 code);
+    bool readRegister(FunctionCodeTabSend1Receive8 code);//csp
 
-    void writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value);
-    void writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t value);
-    void writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t value);
+    bool writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value);
+    bool writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t value);
+    bool writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t value);
 
-    void writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t value);
-    void writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t value);
+    bool writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t value);
+    bool writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t value);
 
-    void writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t value);
-    void writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t value);
+    bool writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t value);
+    bool writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t value);
 
-    void writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value);
+    bool writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value);
 
 
     canid_t  getCanId(void);
