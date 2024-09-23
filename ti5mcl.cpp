@@ -307,17 +307,81 @@ bool ti5Motor::getVelocity(int32_t* velocity)
     tlog_info << "getVelocity: " << std::to_string(_uitemp) << std::endl;
     *velocity = _uitemp;//ma
     return true;
+}
+bool ti5Motor::getTargetVelocity(int32_t*   targetVelocity)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getTargetVelocityCode) == false)
+    {
+        tlog_error << "getTargetVelocity failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getTargetVelocity: " << std::to_string(_uitemp) << std::endl;
+    *targetVelocity = _uitemp;//ma
+    return true;
 
 }
-bool ti5Motor::getTargetVelocity(int32_t*   velocity){}
-bool ti5Motor::getPosition(int32_t* position){}
-bool ti5Motor::getTargetPosition(int32_t* targetPosition){}
-bool ti5Motor::getErrorStatus(int32_t* errorStatus){}
-bool ti5Motor::getMotorTemperature(int32_t* motorTemperature){}
-bool ti5Motor::getDriverTemperature(int32_t* driverTemperature){}//建议使用autoMonitor()
+bool ti5Motor::getPosition(int32_t* position)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getPositionCode) == false)
+    {
+        tlog_error << "getPosition failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getPosition: " << std::to_string(_uitemp) << std::endl;
+    *position = _uitemp;//ma
+    return true;
+}
+bool ti5Motor::getTargetPosition(int32_t* targetPosition)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getTargetPositionCode) == false)
+    {
+        tlog_error << "getTargetPosition failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getTargetPosition: " << std::to_string(_uitemp) << std::endl;
+    *targetPosition = _uitemp;//ma
+    return true;
+}
+bool ti5Motor::getErrorStatus(errorStatus* errorStatus)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getErrorStatusCode) == false)
+    {
+        tlog_error << "getErrorStatus failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getErrorStatus: " << std::to_string(_uitemp) << std::endl;
+    *errorStatus = static_cast<errorStatus>(_uitemp);
+    return true;
+}
+bool ti5Motor::getMotorTemperature(int32_t* motorTemperature)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getMotorTemperatureCode) == false)
+    {
+        tlog_error << "getMotorTemperature failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getMotorTemperature: " << std::to_string(_uitemp) << std::endl;
+    *motorTemperature = _uitemp;
+    return true;
+}
+bool ti5Motor::getDriverTemperature(int32_t* driverTemperature)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getDriverTemperatureCode) == false)
+    {
+        tlog_error << "getDriverTemperature failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getDriverTemperature: " << std::to_string(_uitemp) << std::endl;
+    *driverTemperature = _uitemp;
+    return true;
+}//建议使用autoMonitor()
 bool ti5Motor::getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition){}
+#warning 
 
-bool ti5Motor::setTargetCurrent(int32_t targetCurrent){}
+bool ti5Motor::setTargetCurrent(int32_t targetCurrent)
+{
+    
+}
 bool ti5Motor::setTargetVelocity(int32_t targetVelocity){}
 bool ti5Motor::setTargetPosition(int32_t targetPosition){}
 bool ti5Motor::setCleanError(){}

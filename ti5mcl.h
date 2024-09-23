@@ -137,7 +137,7 @@ public:
         uint8_t driverChipError: 1;
     };
 
-    bool getErrorStatus(int32_t* errorStatus);
+    bool getErrorStatus(errorStatus* errorStatus);
     bool getMotorTemperature(int32_t* motorTemperature);
     bool getDriverTemperature(int32_t* driverTemperature);//建议使用autoMonitor()
     bool getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition);
