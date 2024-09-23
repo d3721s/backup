@@ -12,14 +12,14 @@
 			<Cursor1 position="288" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="tlog.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7172" topLine="238" />
-		</Cursor>
-	</File>
 	<File name="tlog.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="6" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="7854" topLine="375" />
+		</Cursor>
+	</File>
+	<File name="tlog.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7172" topLine="238" />
 		</Cursor>
 	</File>
 	<File name="ti5mcl.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="8" zoom_2="0">
@@ -29,7 +29,7 @@
 	</File>
 	<File name="canglue.h" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1852" topLine="51" />
+			<Cursor1 position="2093" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

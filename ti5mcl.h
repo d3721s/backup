@@ -24,14 +24,14 @@ public:
     ti5MotorSetupData(void) = default;
     ~ti5MotorSetupData(void) = default;
     ti5MotorSetupData(
-                      uint8_t canId, std::string name,
-                      uint8_t reductionRatio,
-                      int32_t maxPositiveCurrent, int32_t maxNegativeCurrent,
-                      int32_t maxPositiveAcceleration, int32_t maxNegativeAcceleration,
-                      int32_t maxPositiveVelocity, int32_t maxNegativeVelocity,
-                      int32_t maxPositivePositon, int32_t maxNegativePositon,
-                      int32_t positionOffset
-                     );
+        uint8_t canId, std::string name,
+        uint8_t reductionRatio,
+        int32_t maxPositiveCurrent, int32_t maxNegativeCurrent,
+        int32_t maxPositiveAcceleration, int32_t maxNegativeAcceleration,
+        int32_t maxPositiveVelocity, int32_t maxNegativeVelocity,
+        int32_t maxPositivePositon, int32_t maxNegativePositon,
+        int32_t positionOffset
+    );
 
     canid_t getCanId(void) const;
     std::string getName(void) const;
@@ -121,19 +121,19 @@ public:
     int32_t getTargetPosition();
     struct errorStatus
     {
-        uint8_t softwareError:1;
-        uint8_t overVoltageError:1;
-        uint8_t lowVoltageError:1;
-        uint8_t :1;
-        uint8_t switchonError:1;
-        uint8_t speedFeedbackError:1;
-        uint8_t overCurrentError:1;
-        uint8_t operationError:1;
-        uint8_t :8;
-        uint8_t encoderTemperatureError:1;
-        uint8_t motorTemperatureError:1;
-        uint8_t driverTemperatureError:1;
-        uint8_t driverChipError:1;
+        uint8_t softwareError: 1;
+        uint8_t overVoltageError: 1;
+        uint8_t lowVoltageError: 1;
+        uint8_t : 1;
+        uint8_t switchonError: 1;
+        uint8_t speedFeedbackError: 1;
+        uint8_t overCurrentError: 1;
+        uint8_t operationError: 1;
+        uint8_t : 8;
+        uint8_t encoderTemperatureError: 1;
+        uint8_t motorTemperatureError: 1;
+        uint8_t driverTemperatureError: 1;
+        uint8_t driverChipError: 1;
     };
 
     int32_t getErrorStatus();
@@ -157,7 +157,7 @@ public:
     bool quickMoveVelocity(int16_t perSecondDegree);
     bool quickMoveJog();
     //自定义
-    #warning "TODO:"
+#warning "TODO:"
     //托管
     bool autoMonitor();
     bool autoCyclicSynchronousPosition();

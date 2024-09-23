@@ -201,6 +201,43 @@ canid_t ti5Motor::getCanId(void)
     return _canId;
 }
 
+reductionRatio ti5Motor::getReductionRatio(void)
+{
+    return _reductionRatio;
+}
+/// @brief 
+/// @param  
+/// @return 
+MotorMode ti5Motor::getMotorMode(void);
+bool ti5Motor::setMotorMode(MotorMode mode);
+int32_t ti5Motor::getCurrent();
+int32_t ti5Motor::getTargetCurrent();
+int32_t ti5Motor::getVelocity();
+int32_t ti5Motor::getTargetVelocity();
+int32_t ti5Motor::getPosition();
+int32_t ti5Motor::getTargetPosition();
+int32_t ti5Motor::getErrorStatus();
+int32_t ti5Motor::getMotorTemperature();
+int32_t ti5Motor::getDriverTemperature();//建议使用autoMonitor()
+int32_t ti5Motor::getCyclicSynchronousPosition();
+bool ti5Motor::setTargetCurrent(int32_t targetCurrent);
+bool ti5Motor::setTargetVelocity(int32_t targetVelocity);
+bool ti5Motor::setTargetPosition(int32_t targetPosition);
+bool ti5Motor::setCleanError();
+bool ti5Motor::quickReset();
+bool ti5Motor::quickHome();
+bool ti5Motor::quickHalt();
+bool ti5Motor::quickMoveAbsolute(int32_t position);
+bool ti5Motor::quickMoveAbsolute(int16_t positionInDegree);
+bool ti5Motor::quickMoveRelative(int32_t position);
+bool ti5Motor::quickMoveRelative(int16_t positionInDegree);
+bool ti5Motor::quickMoveVelocity(int32_t velocity);
+bool ti5Motor::quickMoveVelocity(int16_t perSecondDegree);
+bool ti5Motor::quickMoveJog();
+bool ti5Motor::autoMonitor();
+bool ti5Motor::autoCyclicSynchronousPosition();
+///////////////////////////////////////////////////////////////////////
+
 bool ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
 {
     _frameSend.can_id = this->getCanId();
