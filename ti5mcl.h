@@ -16,14 +16,16 @@
 #define TI5MCLLOGLEVEL TLOG_WARN
 #endif
 
+#define CANDEVICE "vcan0"
 
 class ti5MotorSetupData
 {
 public:
     ti5MotorSetupData(void) = default;
     ~ti5MotorSetupData(void) = default;
-    ti5MotorSetupData(uint8_t canId, std::string name,
-                      //uint8_t reductionRatio,
+    ti5MotorSetupData(
+                      uint8_t canId, std::string name,
+                      uint8_t reductionRatio,
                       int32_t maxPositiveCurrent, int32_t maxNegativeCurrent,
                       int32_t maxPositiveAcceleration, int32_t maxNegativeAcceleration,
                       int32_t maxPositiveVelocity, int32_t maxNegativeVelocity,
@@ -34,7 +36,7 @@ public:
     canid_t getCanId(void) const;
     std::string getName(void) const;
 
-    // uint8_t getReductionRatio(void) const; //使用(ti5Motor*)->getReductionRatio()获取减速比
+    uint8_t getReductionRatio(void) const; 
 
     int32_t getMaxPositiveCurrent(void) const;
     int32_t getMaxNegativeCurrent(void) const;
@@ -50,9 +52,9 @@ public:
 
     int32_t getPositionOffset(void) const;
 
-    void  setCanId(canid_t canId);
+    void setCanId(canid_t canId); //仅空电机，其他情况不建议使用
     void setName(std::string name);
-    //void setReductionRatio(uint8_t reductionRatio); //减速比不能设置
+    void setReductionRatio(reductionRatio reductionRatio); //仅空电机，其他情况不建议使用
 
     void setMaxPositiveCurrent(int32_t maxPositiveCurrent);
     void setMaxNegativeCurrent(int32_t maxNegativeCurrent);
@@ -87,11 +89,20 @@ class ti5Motor
 {
 public:
     //基础方法
+    enum class reductionRatio
+    {
+        reductionRatio51 = 51,
+        reductionRatio81 = 81,
+        reductionRatio101 = 101,
+        reductionRatio121 = 121,
+    };
     ti5Motor(void);//空电机,预留
-    ti5Motor(uint8_t canId);//使用硬件设置初始化软件对象
+    ti5Motor(uint8_t canId, reductionRatio reductionRatioValue);//使用硬件设置初始化软件对象
     ti5Motor(uint8_t canId, ti5MotorSetupData *deviceData);  //使用软件设置初始化软件对象//canId为当前canId，deviceData->_canId为将要设置的canId！
     ~ti5Motor(void) = default;
     //常用方法
+    canid_t  getCanId(void);
+    reductionRatio getReductionRatio(void);
     enum class MotorMode
     {
         modeUndefined = -1,
@@ -102,6 +113,55 @@ public:
     };
     MotorMode getMotorMode(void);
     bool setMotorMode(MotorMode mode);
+    int32_t getCurrent();
+    int32_t getTargetCurrent();
+    int32_t getVelocity();
+    int32_t getTargetVelocity();
+    int32_t getPosition();
+    int32_t getTargetPosition();
+    struct errorStatus
+    {
+        uint8_t softwareError:1;
+        uint8_t overVoltageError:1;
+        uint8_t lowVoltageError:1;
+        uint8_t :1;
+        uint8_t switchonError:1;
+        uint8_t speedFeedbackError:1;
+        uint8_t overCurrentError:1;
+        uint8_t operationError:1;
+        uint8_t :8;
+        uint8_t encoderTemperatureError:1;
+        uint8_t motorTemperatureError:1;
+        uint8_t driverTemperatureError:1;
+        uint8_t driverChipError:1;
+    };
+    
+    int32_t getErrorStatus();
+    // int32_t getMotorTemperature();
+    // int32_t getDriverTemperature();//建议使用autoMonitor()
+    int32_t getCyclicSynchronousPosition();
+    bool setTargetCurrent(int32_t targetCurrent);
+    bool setTargetVelocity(int32_t targetVelocity);
+    bool setTargetPosition(int32_t targetPosition);
+    bool setCleanError();
+
+    //快速设置
+    bool quickReset();
+    bool quickHome();
+    bool quickHalt();
+    bool quickMoveAbsolute(int32_t position);
+    bool quickMoveAbsolute(int16_t positionInDegree);
+    bool quickMoveRelative(int32_t position);
+    bool quickMoveRelative(int16_t positionInDegree);
+    bool quickMoveVelocity(int32_t velocity);
+    bool quickMoveVelocity(int16_t perSecondDegree);
+    bool quickMoveJog();
+    //自定义
+    bool 
+    #warning "TODO:"
+    //托管
+    bool autoMonitor();
+    bool autoCyclicSynchronousPosition();
 
     //全部方法
     enum class FunctionCodeTabSend1Receive0 //set
@@ -235,21 +295,12 @@ public:
 
     bool writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value);
 
-
-    canid_t  getCanId(void);
 private:
 
     ti5MotorSetupData *_deviceData;
     canid_t  _canId;
-    uint32_t _baudRate;
-    uint32_t _timeoutPeriod;
-    uint8_t _reductionRatio;
-
-    MotorMode _motorMode;
-    int32_t _current;
-    int32_t _targetCurrent;
-    int32_t _velocity;
-    int32_t _position;
+    // uint32_t _baudRate;
+    reductionRatio _reductionRatio;
 
     can_frame _frameSend;
     can_frame _frameReceive;

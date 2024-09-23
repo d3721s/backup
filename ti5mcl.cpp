@@ -157,7 +157,7 @@ static void preprocess(void)
         }
     });
 }
-CanBus motorCan("vcan0");
+CanBus motorCan(CANDEVICE);
 static void canInit(void)
 {
     static std::once_flag canInitializedFlag;
@@ -469,6 +469,6 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t valu
               | _frameReceive.data[4] << 32 | _frameReceive.data[5] << 40 | _frameReceive.data[6] << 48 | _frameReceive.data[7] << 56;
     tlog_debug << "receive" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[7]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
-        return true;
+    return true;
 
 }
