@@ -38,13 +38,13 @@ public:
         addr.can_ifindex = ifr.ifr_ifindex;
 
         bind(sockCanHandle, (struct sockaddr *)&addr, sizeof(addr));
-        int flags = fcntl(sockCanHandle, F_GETFL, 0);
-        if (fcntl(sockCanHandle, F_SETFL, flags | O_NONBLOCK) < 0)
-        {
-            perror("Setting non-blocking mode failed");
-            close(sockCanHandle);
-            return false;
-        }
+        // int flags = fcntl(sockCanHandle, F_GETFL, 0);
+        // if (fcntl(sockCanHandle, F_SETFL, flags | O_NONBLOCK) < 0)
+        // {
+        //     perror("Setting non-blocking mode failed");
+        //     close(sockCanHandle);
+        //     return false;
+        // }
         return true;
     }
 

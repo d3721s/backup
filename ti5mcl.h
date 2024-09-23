@@ -137,8 +137,8 @@ public:
     };
 
     int32_t getErrorStatus();
-    // int32_t getMotorTemperature();
-    // int32_t getDriverTemperature();//建议使用autoMonitor()
+    int32_t getMotorTemperature();
+    int32_t getDriverTemperature();//建议使用autoMonitor()
     int32_t getCyclicSynchronousPosition();
     bool setTargetCurrent(int32_t targetCurrent);
     bool setTargetVelocity(int32_t targetVelocity);
@@ -165,7 +165,7 @@ public:
     //全部方法
     enum class FunctionCodeTabSend1Receive0 //set
     {
-        setStopMotorCode = 2, // 停止电机
+        setStopModeCode = 2, // 停止电机
         setRestoreFromFlashCode = 13,     // 从Flash恢复参数
         setSaveToFlashCode = 14,          // 保存参数到Flash
         setRestorFactoryCode = 15,            // 恢复出厂设置

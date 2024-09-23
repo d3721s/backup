@@ -201,41 +201,90 @@ canid_t ti5Motor::getCanId(void)
     return _canId;
 }
 
-reductionRatio ti5Motor::getReductionRatio(void)
+ti5Motor::reductionRatio ti5Motor::getReductionRatio(void)
 {
     return _reductionRatio;
 }
-/// @brief 
-/// @param  
-/// @return 
-MotorMode ti5Motor::getMotorMode(void);
-bool ti5Motor::setMotorMode(MotorMode mode);
-int32_t ti5Motor::getCurrent();
-int32_t ti5Motor::getTargetCurrent();
-int32_t ti5Motor::getVelocity();
-int32_t ti5Motor::getTargetVelocity();
-int32_t ti5Motor::getPosition();
-int32_t ti5Motor::getTargetPosition();
-int32_t ti5Motor::getErrorStatus();
-int32_t ti5Motor::getMotorTemperature();
-int32_t ti5Motor::getDriverTemperature();//建议使用autoMonitor()
-int32_t ti5Motor::getCyclicSynchronousPosition();
-bool ti5Motor::setTargetCurrent(int32_t targetCurrent);
-bool ti5Motor::setTargetVelocity(int32_t targetVelocity);
-bool ti5Motor::setTargetPosition(int32_t targetPosition);
-bool ti5Motor::setCleanError();
-bool ti5Motor::quickReset();
-bool ti5Motor::quickHome();
-bool ti5Motor::quickHalt();
-bool ti5Motor::quickMoveAbsolute(int32_t position);
-bool ti5Motor::quickMoveAbsolute(int16_t positionInDegree);
-bool ti5Motor::quickMoveRelative(int32_t position);
-bool ti5Motor::quickMoveRelative(int16_t positionInDegree);
-bool ti5Motor::quickMoveVelocity(int32_t velocity);
-bool ti5Motor::quickMoveVelocity(int16_t perSecondDegree);
-bool ti5Motor::quickMoveJog();
-bool ti5Motor::autoMonitor();
-bool ti5Motor::autoCyclicSynchronousPosition();
+
+/// @brief
+/// @param
+/// @return
+bool ti5Motor::getMotorMode(MotorMode* mode)
+{
+    readRegister(FunctionCodeTabSend1Receive4::getModeCode);
+    tlog_info << "getMotorMode: " << std::to_string(_uitemp) << std::endl;
+    return static_cast<MotorMode>(_uitemp);
+}
+bool ti5Motor::setMotorMode(MotorMode mode)
+{
+    MotorMode oldMode = getMotorMode();
+    if(mode != oldMode)
+    {
+        switch(mode)
+        {
+        case MotorMode::modeStop:
+            if(writeRegister(FunctionCodeTabSend1Receive0::setStopModeCode) == false)
+                return false;
+        case MotorMode::modeCurrent:
+            if(writeRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, 0) == false)
+                return false;
+        case MotorMode::modeVelocity:
+            if(writeReadRegister(FunctionCodeTabSend5Receive4::setVelocityModeCode, 0) == false)
+                return false;
+        case MotorMode::modePosition:
+            if(writeReadRegister(FunctionCodeTabSend5Receive4::setPositionModeCode, 0) == false)
+                return false;
+        default:
+            tlog_error << "unsupported mode:" << std::to_string(static_cast<uint8_t> (mode)) << std::endl;
+            return false;
+        }
+        MotorMode newMode = getMotorMode();
+        if(newMode != mode)
+        {
+            tlog_error << "setMotorMode failed" << std::endl;
+            return false;
+        }
+    }
+    tlog_info << "setMotorMode: " << std::to_string(_uitemp) << std::endl;
+    return true;
+}
+
+bool ti5Motor::getCurrent(int32_t* current)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getCurrentCode) == false)
+        tlog_error << "getCurrent failed" << std::endl;
+    return _uitemp;//ma
+}
+bool ti5Motor::getTargetCurrent(int32_t* current)
+{
+    readRegister(FunctionCodeTabSend1Receive4::getTargetCurrentCode);
+    return _uitemp;//ma
+
+}
+bool ti5Motor::getVelocity(int32_t* ){}
+bool ti5Motor::getTargetVelocity(int32_t* ){}
+bool ti5Motor::getPosition(int32_t* ){}
+bool ti5Motor::getTargetPosition(int32_t* ){}
+bool ti5Motor::getErrorStatus(int32_t* ){}
+bool ti5Motor::getMotorTemperature(){}
+bool ti5Motor::getDriverTemperature(int32_t* ){}//建议使用autoMonitor()
+bool ti5Motor::getCyclicSynchronousPosition(int32_t* ){}
+bool ti5Motor::setTargetCurrent(int32_t targetCurrent){}
+bool ti5Motor::setTargetVelocity(int32_t targetVelocity){}
+bool ti5Motor::setTargetPosition(int32_t targetPosition){}
+bool ti5Motor::setCleanError(){}
+bool ti5Motor::quickReset(){}
+bool ti5Motor::quickHome(){}
+bool ti5Motor::quickHalt(){}
+bool ti5Motor::quickMoveAbsolute(int32_t position){}
+bool ti5Motor::quickMoveAbsolute(int16_t positionInDegree){}
+bool ti5Motor::quickMoveRelative(int32_t position){}
+bool ti5Motor::quickMoveRelative(int16_t positionInDegree){}
+bool ti5Motor::quickMoveVelocity(int32_t velocity){}
+bool ti5Motor::quickMoveVelocity(int16_t perSecondDegree){}
+bool ti5Motor::quickMoveJog(){}
+bool ti5Motor::autoMonitor(){}
+bool ti5Motor::autoCyclicSynchronousPosition(){}
 ///////////////////////////////////////////////////////////////////////
 
 bool ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
@@ -311,6 +360,7 @@ bool ti5Motor::writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value)
         return false;
     }
     tlog_debug << "send:" << std::to_string(_frameSend.data[0]) << "..." << std::to_string(_frameSend.data[4]) << std::endl;
+
     return true;
 }
 bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t value)
