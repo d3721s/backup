@@ -111,14 +111,15 @@ public:
         modeVelocity = 2,
         modePosition = 3,
     };
-    bool getMotorMode(MotorMode* mode);
+    bool getMotorMode(void);
     bool setMotorMode(MotorMode mode);
-    bool getCurrent(int32_t* current);
-    bool getTargetCurrent(int32_t* targetCurrent);
-    bool getVelocity(int32_t* velocity);
+    bool getCurrent();
+    bool getTargetCurrent();
+    bool getVelocity(int32_t* velocity)
     bool getTargetVelocity(int32_t* targetVelocity);
     bool getPosition(int32_t* position);
     bool getTargetPosition(int32_t* targetPosition);
+
     struct errorStatus
     {
         uint8_t softwareError: 1;
@@ -136,10 +137,10 @@ public:
         uint8_t driverChipError: 1;
     };
 
-    bool getErrorStatus(int32_t* errorStatus);
-    bool getMotorTemperature(int32_t* motorTemperature);
-    bool getDriverTemperature(int32_t* driverTemperature);//建议使用autoMonitor()
-    bool getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition);
+    bool getErrorStatus();
+    bool getMotorTemperature();
+    bool getDriverTemperature();//建议使用autoMonitor()
+    bool getCyclicSynchronousPosition();
     bool setTargetCurrent(int32_t targetCurrent);
     bool setTargetVelocity(int32_t targetVelocity);
     bool setTargetPosition(int32_t targetPosition);

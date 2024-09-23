@@ -277,16 +277,38 @@ bool ti5Motor::setMotorMode(MotorMode mode)
 bool ti5Motor::getCurrent(int32_t* current)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getCurrentCode) == false)
+    {
         tlog_error << "getCurrent failed" << std::endl;
-    return _uitemp;//ma
+        return false;
+    }
+    tlog_info << "getCurrent: " << std::to_string(_uitemp) << std::endl;
+    *current = _uitemp;//ma
+    return true;
 }
 bool ti5Motor::getTargetCurrent(int32_t* current)
 {
-    readRegister(FunctionCodeTabSend1Receive4::getTargetCurrentCode);
-    return _uitemp;//ma
+    if(readRegister(FunctionCodeTabSend1Receive4::getTargetCurrentCode) == false)
+    {
+        tlog_error << "gettargetCurrent failed" << std::endl;
+        return false;
+    }
+    tlog_info << "gettargetCurrent: " << std::to_string(_uitemp) << std::endl;
+    *current = _uitemp;//ma
+    return true;
 
 }
-bool ti5Motor::getVelocity(int32_t* ){}
+bool ti5Motor::getVelocity(int32_t* velocity)
+{
+    if(readRegister(FunctionCodeTabSend1Receive4::getVelocityCode) == false)
+    {
+        tlog_error << "getVelocity failed" << std::endl;
+        return false;
+    }
+    tlog_info << "getVelocity: " << std::to_string(_uitemp) << std::endl;
+    *velocity = _uitemp;//ma
+    return true;
+
+}
 bool ti5Motor::getTargetVelocity(int32_t* ){}
 bool ti5Motor::getPosition(int32_t* ){}
 bool ti5Motor::getTargetPosition(int32_t* ){}
