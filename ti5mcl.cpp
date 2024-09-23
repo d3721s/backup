@@ -1,6 +1,5 @@
 #include "ti5mcl.h"
 #include "tlog.h"
-#include "interface.h"
 #include "canglue.h"
 ti5MotorSetupData::ti5MotorSetupData(uint8_t canId, std::string name,
                                      // uint8_t reductionRatio,
@@ -158,18 +157,25 @@ static void preprocess(void)
         }
     });
 }
-CanBus motorCan("can0");
+CanBus motorCan("vcan0");
 static void canInit(void)
 {
-
     static std::once_flag canInitializedFlag;
     std::call_once(canInitializedFlag, []
-    { motorCan.init(); });
+    {
+        if(motorCan.init() == false)
+        {
+            tlog_fatal << "can bus init failed" << std::endl;
+            exit(1);
+        }
+    }
+                  );
 }
 
 ti5Motor::ti5Motor(void)
 {
     preprocess();
+    canInit();
     tlog_warn << "void ti5Motor created" << std::endl;
 }
 
@@ -196,200 +202,260 @@ canid_t ti5Motor::getCanId(void)
     return _canId;
 }
 
-void ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
+bool ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
 {
-    can_frame frameSend;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 1;
     frameSend.data[0] = static_cast<uint8_t>(code);
-    motorCan.sendFrame(frameSend);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << std::endl;
 }
-void ti5Motor::readRegister(FunctionCodeTabSend1Receive4 code)
+bool ti5Motor::readRegister(FunctionCodeTabSend1Receive4 code)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 1;
     frameSend.data[0] = static_cast<uint8_t>(code);
-    motorCan.sendFrame(frameSend);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _uitemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24;
     tlog_debug << "receive:" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[3]) << std::endl;
     tlog_debug << "read:" << std::to_string(_uitemp) << std::endl;
 }
 
-void ti5Motor::readRegister(FunctionCodeTabSend1Receive8 code)
+bool ti5Motor::readRegister(FunctionCodeTabSend1Receive8 code)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 1;
     frameSend.data[0] = static_cast<uint8_t>(code);
-    motorCan.sendFrame(frameSend);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _ultemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
-    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;    
+              | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
     tlog_debug << "receive:" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[7]) << std::endl;
     tlog_debug << "read:" << std::to_string(_ultemp) << std::endl;
 } // csp
 
-void ti5Motor::writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value)
+bool ti5Motor::writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value)
 {
-    can_frame frameSend;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 5;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint32_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 24);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[4]) << std::endl;
 }
-void ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 5;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint32_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 24);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[4]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _uitemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24;
     tlog_debug << "receive:" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[3]) << std::endl;
     tlog_debug << "read:" << std::to_string(_uitemp) << std::endl;
 }
-void ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 5;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint32_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value)>>24);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 24);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[4]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _ultemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
-    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
+              | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
     tlog_debug << "receive:" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[7]) << std::endl;
     tlog_debug << "read:" << std::to_string(_ultemp) << std::endl;
 }
 
-void ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 6;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>24);
-    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>32);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[5]) << std::endl;
 
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _uitemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24;
     tlog_debug << "receive:" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[3]) << std::endl;
     tlog_debug << "read:" << std::to_string(_uitemp) << std::endl;
 }
-void ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 6;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>24);
-    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>32);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send:" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[5]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _ultemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
-    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48;
+              | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48;
     tlog_debug << "receive:" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[6]) << std::endl;
     tlog_debug << "read:" << std::to_string(_ultemp) << std::endl;
 }
 
-void ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 7;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>24);
-    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>32);
-    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>40);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 40);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[6]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _ultemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
-    | frameReceive.data[4] << 32;
+              | frameReceive.data[4] << 32;
     tlog_debug << "receive" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[4]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
 }
-void ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 7;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>24);
-    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>32);
-    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>40);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 40);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[6]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _ultemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
-    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40;
+              | frameReceive.data[4] << 32 | frameReceive.data[5] << 40;
     tlog_debug << "receive" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[5]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
-}   
+}
 
-void ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value)
+bool ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t value)
 {
-    can_frame frameSend;
-    can_frame frameReceive;
     frameSend.can_id = this->getCanId();
     frameSend.can_dlc = 6;
     frameSend.data[0] = static_cast<uint8_t>(code);
     frameSend.data[1] = static_cast<uint8_t>(static_cast<uint64_t>(value));
-    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>8);
-    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>16);
-    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>24);
-    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>32);
-    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>40);
-    frameSend.data[7] = static_cast<uint8_t>(static_cast<uint64_t>(value)>>48);
-    motorCan.sendFrame(frameSend);
+    frameSend.data[2] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 8);
+    frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
+    frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
+    frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 40);
+    frameSend.data[7] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 48);
+    if(motorCan.sendFrame(frameSend) == false)
+    {
+        tlog_error << "send failed" << std::endl;
+        return false;
+    }
     tlog_debug << "send" << std::to_string(frameSend.data[0]) << "..." << std::to_string(frameSend.data[7]) << std::endl;
-    motorCan.receiveFrame(frameReceive);
+    if (motorCan.receiveFrame(frameReceive) == false)
+    {
+        tlog_error << "receive failed" << std::endl;
+        return false;
+    }
     _ultemp = frameReceive.data[0] | frameReceive.data[1] << 8 | frameReceive.data[2] << 16 | frameReceive.data[3] << 24
-    | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
+              | frameReceive.data[4] << 32 | frameReceive.data[5] << 40 | frameReceive.data[6] << 48 | frameReceive.data[7] << 56;
     tlog_debug << "receive" << std::to_string(frameReceive.data[0]) << "..." << std::to_string(frameReceive.data[7]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
 }

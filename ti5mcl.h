@@ -251,6 +251,9 @@ private:
     int32_t _velocity;
     int32_t _position;
 
+    can_frame frameSend;
+    can_frame frameReceive;
+
     uint8_t _uctemp;
     uint16_t _ustemp;
     uint32_t _uitemp;

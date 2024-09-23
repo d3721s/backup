@@ -7,7 +7,7 @@
 #include <linux/can/raw.h> // For raw CAN socket definitions
 #include <net/if.h>
 #include <sys/ioctl.h>
-
+#include <fcntl.h> // For O_NONBLOCK
 class CanBus
 {
 public:
@@ -24,7 +24,7 @@ public:
         }
     }
 
-    void init(void)
+    bool init(void)
     {
         struct sockaddr_can addr;
         struct ifreq ifr;
@@ -36,31 +36,46 @@ public:
         addr.can_ifindex = ifr.ifr_ifindex;
 
         bind(sockCanHandle, (struct sockaddr *)&addr, sizeof(addr));
+        // 设置套接字为非阻塞模式
+        int flags = fcntl(sockCanHandle, F_GETFL, 0);
+        if (fcntl(sockCanHandle, F_SETFL, flags | O_NONBLOCK) < 0)
+        {
+            perror("Setting non-blocking mode failed");
+            close(sockCanHandle);
+            return false;
+        }
+        return true;
     }
 
-    void sendFrame(const can_frame &frame)
+    bool sendFrame(const can_frame &frame)
     {
         if (sockCanHandle == -1)
         {
             std::cerr << "Socket not initialized" << std::endl;
+            return false;
         }
 
         if (send(sockCanHandle, &frame, sizeof(frame), 0) < 0)
         {
             std::cerr << "Failed to send CAN frame" << std::endl;
+            return false;
         }
+        return true;
     }
 
-    void receiveFrame(can_frame &frame)
+    bool receiveFrame(can_frame &frame)
     {
         if (sockCanHandle == -1)
         {
             std::cerr << "Socket not initialized" << std::endl;
+            return false;
         }
         if (recv(sockCanHandle, &frame, sizeof(frame), 0) < 0)
         {
             std::cerr << "Failed to receive CAN frame" << std::endl;
+            return false;
         }
+        return true;
     }
 
 private:
