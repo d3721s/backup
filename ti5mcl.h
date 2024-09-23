@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <chrono>
-
+#include "canglue.h"
 
 #define TI5MCLLOGLEVEL TLOG_DEBUG
 #warning "temploglevel"
@@ -31,7 +31,7 @@ public:
                       int32_t positionOffset
                      );
 
-    uint8_t getCanId(void) const;
+    canid_t getCanId(void) const;
     std::string getName(void) const;
 
     // uint8_t getReductionRatio(void) const; //使用(ti5Motor*)->getReductionRatio()获取减速比
@@ -50,7 +50,7 @@ public:
 
     int32_t getPositionOffset(void) const;
 
-    canid_t  setCanId(uint8_t canId);
+    void  setCanId(canid_t canId);
     void setName(std::string name);
     //void setReductionRatio(uint8_t reductionRatio); //减速比不能设置
 
