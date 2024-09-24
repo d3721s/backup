@@ -16,7 +16,9 @@
 #define TI5MCLLOGLEVEL TLOG_WARN
 #endif
 
+#ifndef CANDEVICE
 #define CANDEVICE "can0"
+#endif
 
 class ti5MotorSetupData
 {
@@ -52,9 +54,9 @@ public:
 
     int32_t getPositionOffset(void) const;
 
-    void setCanId(canid_t canId); //仅空电机，其他情况不建议使用
+    void setCanId(canid_t canId); 
     void setName(std::string name);
-    void setReductionRatio(uint8_t reductionRatio); //仅空电机，其他情况不建议使用
+    void setReductionRatio(uint8_t reductionRatio);
 
     void setMaxPositiveCurrent(int32_t maxPositiveCurrent);
     void setMaxNegativeCurrent(int32_t maxNegativeCurrent);
@@ -139,13 +141,15 @@ public:
 
     struct currentSpeedPosition
     {
-
+        uint16_t current;
+        int16_t speed;
+        int32_t position;
     };
 
     bool getErrorStatus(errorStatus* errorStatus);
     bool getMotorTemperature(int32_t* motorTemperature);
     bool getDriverTemperature(int32_t* driverTemperature);//建议使用autoMonitor()
-    bool getCurrentSpeedPosition(int64_t* currentSpeedPosition);
+    bool getCurrentSpeedPosition(currentSpeedPosition* currentSpeedPosition);
     #warning "TODO int32->int16*2"
     bool setTargetCurrent(int32_t targetCurrent);
     bool setTargetVelocity(int32_t targetVelocity);
@@ -320,5 +324,9 @@ private:
     int16_t _sstemp;
     int32_t _sitemp;
     int64_t _sltemp;
+
+    int16_t _realtimeCurrent;
+    int32_t _realtimeVelocity;
+    int32_t _realtimePosition;//4ms刷新一次
 };
 #endif // TI5MCL_H_INCLUDED

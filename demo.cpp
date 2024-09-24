@@ -53,18 +53,8 @@ int tempPosition;
         ti5Motor4.quickMoveRelativeInDegree(45);
         usleep(400000);
         ti5Motor5.quickMoveRelativeInDegree(45);
-
-//        sleep(3);
-//
-//        ti5Motor3.quickMoveAbsoluteInDegree(45);
-//        usleep(40000);
-//        ti5Motor4.quickMoveAbsoluteInDegree(45);
-//
-//        sleep(3);
-//        ti5Motor3.quickMoveAbsoluteInDegree(-45);
-//        usleep(40000);
-//        ti5Motor4.quickMoveAbsoluteInDegree(-45);
-//        sleep(3);
+        usleep(400000);
+        
         sleep(5);
     }
 
