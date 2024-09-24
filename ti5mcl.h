@@ -56,7 +56,7 @@ public:
 
     void setCanId(canid_t canId); 
     void setName(std::string name);
-    void setReductionRatio(uint8_t reductionRatio);
+    void setReductionRatio(uint8_t reductionRatio); //51,81,101,121
 
     void setMaxPositiveCurrent(int32_t maxPositiveCurrent);
     void setMaxNegativeCurrent(int32_t maxNegativeCurrent);
@@ -90,7 +90,7 @@ private:
 class ti5Motor
 {
 public:
-    //基础方法
+    //基础
     enum class reductionRatio
     {
         reductionRatio51 = 51,
