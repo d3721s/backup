@@ -111,11 +111,11 @@ public:
         modeVelocity = 2,
         modePosition = 3,
     };
-    bool getMotorMode(void);
+    bool getMotorMode(MotorMode* mode);
     bool setMotorMode(MotorMode mode);
     bool getCurrent(int32_t* current);
     bool getTargetCurrent(int32_t* targetCurrent);
-    bool getVelocity(int32_t* velocity)
+    bool getVelocity(int32_t* velocity);
     bool getTargetVelocity(int32_t* targetVelocity);
     bool getPosition(int32_t* position);
     bool getTargetPosition(int32_t* targetPosition);
