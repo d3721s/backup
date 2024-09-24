@@ -16,7 +16,7 @@
 #define TI5MCLLOGLEVEL TLOG_WARN
 #endif
 
-#define CANDEVICE "vcan0"
+#define CANDEVICE "can0"
 
 class ti5MotorSetupData
 {
@@ -111,11 +111,11 @@ public:
         modeVelocity = 2,
         modePosition = 3,
     };
-    bool getMotorMode(void);
+    bool getMotorMode(MotorMode* mode);
     bool setMotorMode(MotorMode mode);
     bool getCurrent(int32_t* current);
     bool getTargetCurrent(int32_t* targetCurrent);
-    bool getVelocity(int32_t* velocity)
+    bool getVelocity(int32_t* velocity);
     bool getTargetVelocity(int32_t* targetVelocity);
     bool getPosition(int32_t* position);
     bool getTargetPosition(int32_t* targetPosition);
@@ -157,11 +157,11 @@ public:
     bool quickHome();
     bool quickHalt();
     bool quickMoveAbsolute(int32_t position);
-    bool quickMoveAbsolute(int16_t positionInDegree);
+    bool quickMoveAbsoluteInDegree(int16_t positionInDegree);
     bool quickMoveRelative(int32_t position);
-    bool quickMoveRelative(int16_t positionInDegree);
+    bool quickMoveRelativeInDegree(int16_t positionInDegree);
     bool quickMoveVelocity(int32_t velocity);
-    bool quickMoveVelocity(int16_t perSecondInDegree);
+    bool quickMoveVelocityInDegree(int16_t perSecondInDegree);
     bool quickMoveJog();
     //自定义
 #warning "TODO:"
@@ -227,12 +227,12 @@ public:
     enum class FunctionCodeTabSend5Receive0
     {
         setCurrentModeCode = 28, // 电流模式
+        setVelocityModeCode = 29, // 速度模式
+        setPositionModeCode = 30, // 位置模式
     };
     enum class FunctionCodeTabSend5Receive4 // set
     {
         setStopMotorCode = 2, // 停止电机
-        setVelocityModeCode = 29, // 速度模式
-        setPositionModeCode = 30, // 位置模式
         setMaxPositiveCurrentCode = 32, // 最大正向电流
         setMaxNegativeCurrentCode = 33, // 最大负向电流
         setMaxPositiveAccelerationCode = 34, // 最大正向加速度
