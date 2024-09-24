@@ -148,7 +148,7 @@ public:
     bool setCleanError();
 
     //快速设置
-    bool quickReset();
+    // bool quickReset();
     bool quickHome();
     bool quickHalt();
     bool quickMoveAbsolute(int32_t position);
@@ -156,7 +156,7 @@ public:
     bool quickMoveRelative(int32_t position);
     bool quickMoveRelative(int16_t positionInDegree);
     bool quickMoveVelocity(int32_t velocity);
-    bool quickMoveVelocity(int16_t perSecondDegree);
+    bool quickMoveVelocity(int16_t perSecondInDegree);
     bool quickMoveJog();
     //自定义
 #warning "TODO:"
@@ -168,6 +168,7 @@ public:
     enum class FunctionCodeTabSend1Receive0 //set
     {
         setStopModeCode = 2, // 停止电机
+        setCleanErrorCode = 11, // 清除错误
         setRestoreFromFlashCode = 13,     // 从Flash恢复参数
         setSaveToFlashCode = 14,          // 保存参数到Flash
         setRestorFactoryCode = 15,            // 恢复出厂设置
@@ -248,7 +249,7 @@ public:
         setOverVoltageThresholdCode = 135,  // 过压阈值
         setLowVoltageThresholdCode = 137, // 低压阈值
     };
-    enum class FunctionCodeTabSend5Receive8 // set
+    enum class FunctionCodeTabSend5Receive8 // get
     {
         setCurrentCode = 66, // 实际电流
         setVelocityCode = 67, // 实际速度
