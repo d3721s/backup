@@ -137,10 +137,15 @@ public:
         uint8_t driverChipError: 1;
     };
 
+    struct currentSpeedPosition
+    {
+
+    };
+
     bool getErrorStatus(errorStatus* errorStatus);
     bool getMotorTemperature(int32_t* motorTemperature);
     bool getDriverTemperature(int32_t* driverTemperature);//建议使用autoMonitor()
-    bool getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition);
+    bool getCurrentSpeedPosition(int64_t* currentSpeedPosition);
     #warning "TODO int32->int16*2"
     bool setTargetCurrent(int32_t targetCurrent);
     bool setTargetVelocity(int32_t targetVelocity);
@@ -162,7 +167,7 @@ public:
 #warning "TODO:"
     //托管
     bool autoMonitor();
-    bool autoCyclicSynchronousPosition();
+    bool autoCurrentSpeedPosition();
 
     //全部方法
     enum class FunctionCodeTabSend1Receive0 //set
@@ -217,7 +222,7 @@ public:
     };
     enum class FunctionCodeTabSend1Receive8 //get
     {
-        getCyclicSynchronousPositionCode = 65, // 循环同步位置
+        getCurrentSpeedPositionCode = 65, // 循环同步位置
     };
     enum class FunctionCodeTabSend5Receive0
     {

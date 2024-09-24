@@ -375,41 +375,39 @@ bool ti5Motor::getDriverTemperature(int32_t* driverTemperature)
     *driverTemperature = _uitemp;
     return true;
 }//建议使用autoMonitor()
-bool ti5Motor::getCyclicSynchronousPosition(int32_t* cyclicSynchronousPosition){}
+bool ti5Motor::getCurrentSpeedPosition(int32_t* currentSpeedPosition){}
 #warning "int32->int16+"
 
 bool ti5Motor::setTargetCurrent(int32_t targetCurrent)
 {
-    if(writeReadRegister(FunctionCodeTabSend5Receive8::setCurrentCode, targetCurrent)==false)
+    if(writeReadRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, targetCurrent)==false)
     {
         tlog_error << "setTargetCurrent failed" << std::endl;
         return false;
     }
 
     tlog_info << "setTargetCurrent: " << std::to_string(targetCurrent) << std::endl;
-    processCyclicSynchronousPosition(_ultemp);
+    processCurrentSpeedPosition(_ultemp);
     return true;
 }
 bool ti5Motor::setTargetVelocity(int32_t targetVelocity)
 {
-    if(writeReadRegister(FunctionCodeTabSend5Receive0::setVelocityCode, targetVelocity)==false)
+    if(writeReadRegister(FunctionCodeTabSend5Receive4::setVelocityModeCode, targetVelocity)==false)
     {
         tlog_error << "setTargetVelocity failed" << std::endl;
         return false;
     }
     tlog_info << "setTargetVelocity: " << std::to_string(targetVelocity) << std::endl;
-    processCyclicSynchronousPosition(_ultemp);
     return true;
 }
 bool ti5Motor::setTargetPosition(int32_t targetPosition)
 {
-    if(writeReadRegister(FunctionCodeTabSend5Receive0::setPositionCode, targetPosition)==false)
+    if(writeReadRegister(FunctionCodeTabSend5Receive4::setPositionModeCode, targetPosition)==false)
     {
         tlog_error << "setTargetPosition failed" << std::endl;
         return false;
     }
     tlog_info << "setTargetPosition: " << std::to_string(targetPosition) << std::endl;
-    processCyclicSynchronousPosition(_ultemp);
     return true;
 }
 bool ti5Motor::setCleanError()
@@ -465,8 +463,11 @@ bool ti5Motor::autoMonitor()
     pthread_create(&_monitorThread, nullptr, monitorThread, this);
     tlog_info << "autoMonitorThreadStart" << std::endl;
 }
-bool ti5Motor::autoCyclicSynchronousPosition(){}
-///////////////////////////////////////////////////////////////////////
+bool ti5Motor::autoCurrentSpeedPosition()
+{
+    pthread_create(&_currentSpeedPositionThread, nullptr, currentSpeedPositionThread, this);
+    tlog_info << "autoCurrentSpeedPositionThreadStart" << std::endl;
+}
 
 bool ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
 {
@@ -736,5 +737,4 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t valu
     tlog_debug << "receive" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[7]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
     return true;
-
 }
