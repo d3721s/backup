@@ -16,7 +16,7 @@
 #define TI5MCLLOGLEVEL TLOG_WARN
 #endif
 
-#define CANDEVICE "vcan0"
+#define CANDEVICE "can0"
 
 class ti5MotorSetupData
 {
@@ -111,14 +111,14 @@ public:
         modeVelocity = 2,
         modePosition = 3,
     };
-    bool getMotorMode(MotorMode* mode);
+    bool getMotorMode(MotorMode *mode);
     bool setMotorMode(MotorMode mode);
-    bool getCurrent(int32_t* current);
-    bool getTargetCurrent(int32_t* targetCurrent);
-    bool getVelocity(int32_t* velocity);
-    bool getTargetVelocity(int32_t* targetVelocity);
-    bool getPosition(int32_t* position);
-    bool getTargetPosition(int32_t* targetPosition);
+    bool getCurrent(int32_t *current);
+    bool getTargetCurrent(int32_t *targetCurrent);
+    bool getVelocity(int32_t *velocity);
+    bool getTargetVelocity(int32_t *targetVelocity);
+    bool getPosition(int32_t *position);
+    bool getTargetPosition(int32_t *targetPosition);
 
     struct errorStatus
     {
@@ -142,11 +142,11 @@ public:
 
     };
 
-    bool getErrorStatus(errorStatus* errorStatus);
-    bool getMotorTemperature(int32_t* motorTemperature);
-    bool getDriverTemperature(int32_t* driverTemperature);//建议使用autoMonitor()
-    bool getCurrentSpeedPosition(int64_t* currentSpeedPosition);
-    #warning "TODO int32->int16*2"
+    bool getErrorStatus(errorStatus *errorStatus);
+    bool getMotorTemperature(int32_t *motorTemperature);
+    bool getDriverTemperature(int32_t *driverTemperature);//建议使用autoMonitor()
+    bool getCurrentSpeedPosition(int64_t *currentSpeedPosition);
+#warning "TODO int32->int16*2"
     bool setTargetCurrent(int32_t targetCurrent);
     bool setTargetVelocity(int32_t targetVelocity);
     bool setTargetPosition(int32_t targetPosition);
