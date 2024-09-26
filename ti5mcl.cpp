@@ -22,7 +22,7 @@ ti5MotorSetupData::ti5MotorSetupData(uint8_t canId, std::string name,
     _maxNegativePositon = maxNegativePositon;
     _positionOffset = positionOffset;
 }
-canid_t  ti5MotorSetupData::getCanId(void) const
+uint8_t  ti5MotorSetupData::getCanId(void) const
 {
     return _canId;
 }
@@ -30,10 +30,10 @@ std::string ti5MotorSetupData::getName(void) const
 {
     return _name;
 }
-// uint8_t ti5MotorSetupData::getReductionRatio(void) const
-//{
-//     return _reductionRatio;
-// }
+ uint8_t ti5MotorSetupData::getReductionRatio(void) const
+{
+     return _reductionRatio;
+ }
 int32_t ti5MotorSetupData::getMaxPositiveCurrent(void) const
 {
     return _maxPositiveCurrent;
@@ -72,7 +72,7 @@ int32_t ti5MotorSetupData::getPositionOffset(void) const
 {
     return _positionOffset;
 }
-void ti5MotorSetupData::setCanId(canid_t canId)
+void ti5MotorSetupData::setCanId(uint8_t canId)
 {
     _canId = canId;
 }
@@ -80,10 +80,10 @@ void ti5MotorSetupData::setName(std::string name)
 {
     _name = name;
 }
-// void ti5MotorSetupData::setReductionRatio(uint8_t reductionRatio)
-// {
-//     _reductionRatio = reductionRatio;
-// }
+ void ti5MotorSetupData::setReductionRatio(uint8_t reductionRatio)
+ {
+     _reductionRatio = reductionRatio;
+ }
 void ti5MotorSetupData::setMaxPositiveCurrent(int32_t maxPositiveCurrent)
 {
     _maxPositiveCurrent = maxPositiveCurrent;
@@ -158,45 +158,45 @@ ti5Motor::ti5Motor(void)
 
 ti5Motor::ti5Motor(uint8_t canId, reductionRatio reductionRatioValue)
 {
-    _deviceData->setCanId(canId);
+    _deviceData.setCanId(canId);
+    printf("0\r\n");
     _canId = canId;
-    _deviceData->setReductionRatio(static_cast<uint8_t>(reductionRatioValue));
+    _deviceData.setReductionRatio(static_cast<uint8_t>(reductionRatioValue));
     _reductionRatio = reductionRatioValue;
-
+    printf("1\r\n");
     logInit();
     canInit();
     writeRegister(FunctionCodeTabSend1Receive0::setRestoreFromFlashCode);
-    _deviceData->setName(std::string("ti5Motor") + std::to_string(canId));
-    int32_t maxPositiveCurrent, maxNegativeCurrent, maxPositiveAcceleration, maxNegativeAcceleration, maxPositivePositon, maxNegativePositon, maxPositiveVelocity, maxNegativeVelocity, positionOffset;
-    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveCurrentCode, &maxPositiveCurrent);
-    _deviceData->setsetMaxPositiveCurrent(maxPositiveCurrent);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeCurrentCode, &maxNegativeCurrent);
-    _deviceData->setMaxNegativeCurrent(maxNegativeCurrent);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveAccelerationCode, &maxPositiveAcceleration);
-    _deviceData->setMaxPositiveAcceleration(maxPositiveAcceleration);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeAccelerationCode, &maxNegativeAcceleration);
-    _deviceData->setMaxNegativeAcceleration(maxNegativeAcceleration);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxPositivePositonCode, &maxPositivePositon);
-    _deviceData->setMaxPositivePositon(maxPositivePositon);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativePositonCode, &maxNegativePositon);
-    _deviceData->setMaxNegativePositon(maxNegativePositon);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveVelocityCode, &maxPositiveVelocity);
-    _deviceData->setMaxPositiveVelocity(maxPositiveVelocity);
-    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeVelocityCode, &maxNegativeVelocity);
-    _deviceData->setMaxNegativeVelocity(maxNegativeVelocity);
-    readRegister(FunctionCodeTabSend1Receive4::getPositionOffsetCode, &positionOffset)
-    _deviceData->setPositionOffset(positionOffset);
+    _deviceData.setName(std::string("ti5Motor") + std::to_string(canId));
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveCurrentCode);
+    _deviceData.setMaxPositiveCurrent(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeCurrentCode);
+    _deviceData.setMaxNegativeCurrent(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveAccelerationCode);
+    _deviceData.setMaxPositiveAcceleration(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeAccelerationCode);
+    _deviceData.setMaxNegativeAcceleration(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositivePositionCode);
+    _deviceData.setMaxPositivePositon(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativePositionCode);
+    _deviceData.setMaxNegativePositon(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveVelocityCode);
+    _deviceData.setMaxPositiveVelocity(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeVelocityCode);
+    _deviceData.setMaxNegativeVelocity(_sitemp);
+    readRegister(FunctionCodeTabSend1Receive4::getPositionOffsetCode);
+    _deviceData.setPositionOffset(_sitemp);
     tlog_info << "ti5Motor(canid:" << std::to_string(canId) << ") created using hardware settings" << std::endl;
 }
 
-ti5Motor::ti5Motor(uint8_t canId, ti5MotorSetupData *deviceData)
+ti5Motor::ti5Motor(uint8_t canId, ti5MotorSetupData deviceData)
 {
     _deviceData = deviceData;
     logInit();
     canInit();
-    //    setCanId(_deviceData->getCanId());
+    //    setCanId(_deviceData.getCanId());
 
-    tlog_info << "ti5Motor created canID:" << std::to_string(deviceData->getCanId()) << " name:" << deviceData->getName() << "using software settings" << std::endl;
+    tlog_info << "ti5Motor created canID:" << std::to_string(deviceData.getCanId()) << " name:" << deviceData.getName() << "using software settings" << std::endl;
 }
 
 canid_t ti5Motor::getCanId(void)
@@ -387,8 +387,8 @@ bool ti5Motor::getCurrentSpeedPosition(currentSpeedPosition *currentSpeedPositio
 
 bool ti5Motor::setTargetCurrent(int32_t targetCurrent)
 {
-    targetCurrent = std::max(targetCurrent, _deviceData->getMaxNegativeCurrent());
-    targetCurrent = std::min(targetCurrent, _deviceData->getMaxPositiveCurrent());
+    targetCurrent = std::max(targetCurrent, _deviceData.getMaxNegativeCurrent());
+    targetCurrent = std::min(targetCurrent, _deviceData.getMaxPositiveCurrent());
     if(writeRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, targetCurrent) == false)
     {
         tlog_error << "setTargetCurrent failed" << std::endl;
@@ -401,8 +401,8 @@ bool ti5Motor::setTargetCurrent(int32_t targetCurrent)
 }
 bool ti5Motor::setTargetVelocity(int32_t targetVelocity)
 {
-    targetVelocity = std::max(targetVelocity, _deviceData->getMaxNegativeVelocity());
-    targetVelocity = std::min(targetVelocity, _deviceData->getMaxPositiveVelocity());
+    targetVelocity = std::max(targetVelocity, _deviceData.getMaxNegativeVelocity());
+    targetVelocity = std::min(targetVelocity, _deviceData.getMaxPositiveVelocity());
     if(writeRegister(FunctionCodeTabSend5Receive0::setVelocityModeCode, targetVelocity) == false)
     {
         tlog_error << "setTargetVelocity failed" << std::endl;
@@ -413,8 +413,8 @@ bool ti5Motor::setTargetVelocity(int32_t targetVelocity)
 }
 bool ti5Motor::setTargetPosition(int32_t targetPosition)
 {
-    targetPosition = std::max(targetPosition, _deviceData->getMaxNegativePositon());
-    targetPosition = std::min(targetPosition, _deviceData->getMaxPositivePositon());
+    targetPosition = std::max(targetPosition, _deviceData.getMaxNegativePositon());
+    targetPosition = std::min(targetPosition, _deviceData.getMaxPositivePositon());
     if(writeRegister(FunctionCodeTabSend5Receive0::setPositionModeCode, targetPosition) == false)
     {
         tlog_error << "setTargetPosition failed" << std::endl;

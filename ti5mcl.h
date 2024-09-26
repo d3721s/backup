@@ -35,7 +35,7 @@ public:
         int32_t positionOffset
     );
 
-    canid_t getCanId(void) const;
+    uint8_t getCanId(void) const;
     std::string getName(void) const;
 
     uint8_t getReductionRatio(void) const;
@@ -54,7 +54,7 @@ public:
 
     int32_t getPositionOffset(void) const;
 
-    void setCanId(canid_t canId);
+    void setCanId(uint8_t canId);
     void setName(std::string name);
     void setReductionRatio(uint8_t reductionRatio); //51,81,101,121
 
@@ -73,7 +73,7 @@ public:
     void setPositionOffset(int32_t positionOffset);
 
 private:
-    canid_t  _canId;
+    uint8_t  _canId;
     std::string _name;
     uint8_t _reductionRatio;
     int32_t _maxPositiveCurrent;
@@ -100,7 +100,7 @@ public:
     };
     ti5Motor(void);//空电机,预留
     ti5Motor(uint8_t canId, reductionRatio reductionRatioValue);//使用硬件设置初始化软件对象
-    ti5Motor(uint8_t canId, ti5MotorSetupData *deviceData);  //使用软件设置初始化软件对象//canId为当前canId，deviceData->_canId为将要设置的canId！
+    ti5Motor(uint8_t canId, ti5MotorSetupData deviceData);  //使用软件设置初始化软件对象//canId为当前canId，deviceData->_canId为将要设置的canId！
     ~ti5Motor(void) = default;
     //常用方法
     canid_t  getCanId(void);
@@ -308,7 +308,7 @@ public:
 
 private:
 
-    ti5MotorSetupData *_deviceData;
+    ti5MotorSetupData _deviceData;
     canid_t  _canId;
     // uint32_t _baudRate;
     reductionRatio _reductionRatio;
