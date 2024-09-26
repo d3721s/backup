@@ -54,7 +54,7 @@ public:
 
     int32_t getPositionOffset(void) const;
 
-    void setCanId(canid_t canId); 
+    void setCanId(canid_t canId);
     void setName(std::string name);
     void setReductionRatio(uint8_t reductionRatio); //51,81,101,121
 
@@ -315,6 +315,7 @@ private:
 
     can_frame _frameSend;
     can_frame _frameReceive;
+    std::mutex canMutex;
 
     uint8_t _uctemp;
     uint16_t _ustemp;

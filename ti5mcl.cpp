@@ -170,7 +170,7 @@ ti5Motor::ti5Motor(uint8_t canId, ti5MotorSetupData *deviceData)
     _deviceData = deviceData;
     logInit();
     canInit();
-    setCanId(_deviceData->getCanId());
+//    setCanId(_deviceData->getCanId());
 
     tlog_info << "ti5Motor created canID:" << std::to_string(deviceData->getCanId()) << " name:" << deviceData->getName() << "using software settings" << std::endl;
 }
@@ -244,11 +244,11 @@ bool ti5Motor::setMotorMode(MotorMode mode)
         }
         if(newMode != mode)
         {
-            tlog_error << "setMotorMode failed" << std::endl;
+            tlog_error << "setMotorMode failedfailed" << std::endl;
             return false;
         }
     }
-    tlog_info << "setMotorMode: " << std::to_string(_uitemp) << std::endl;
+    tlog_info << "setMotorMode: " << std::to_string(_sitemp) << std::endl;
     return true;
 }
 
@@ -259,8 +259,8 @@ bool ti5Motor::getCurrent(int32_t* current)
         tlog_error << "getCurrent failed" << std::endl;
         return false;
     }
-    tlog_info << "getCurrent: " << std::to_string(_uitemp) << std::endl;
-    *current = _uitemp;//ma
+    tlog_info << "getCurrent: " << std::to_string(_sitemp) << std::endl;
+    *current = _sitemp;//ma
     return true;
 }
 bool ti5Motor::getTargetCurrent(int32_t* current)
@@ -270,8 +270,8 @@ bool ti5Motor::getTargetCurrent(int32_t* current)
         tlog_error << "gettargetCurrent failed" << std::endl;
         return false;
     }
-    tlog_info << "gettargetCurrent: " << std::to_string(_uitemp) << std::endl;
-    *current = _uitemp;//ma
+    tlog_info << "gettargetCurrent: " << std::to_string(_sitemp) << std::endl;
+    *current = _sitemp;//ma
     return true;
 
 }
@@ -282,8 +282,8 @@ bool ti5Motor::getVelocity(int32_t* velocity)
         tlog_error << "getVelocity failed" << std::endl;
         return false;
     }
-    tlog_info << "getVelocity: " << std::to_string(_uitemp) << std::endl;
-    *velocity = _uitemp;//ma
+    tlog_info << "getVelocity: " << std::to_string(_sitemp) << std::endl;
+    *velocity = _sitemp;//ma
     return true;
 }
 bool ti5Motor::getTargetVelocity(int32_t*   targetVelocity)
@@ -293,8 +293,8 @@ bool ti5Motor::getTargetVelocity(int32_t*   targetVelocity)
         tlog_error << "getTargetVelocity failed" << std::endl;
         return false;
     }
-    tlog_info << "getTargetVelocity: " << std::to_string(_uitemp) << std::endl;
-    *targetVelocity = _uitemp;//ma
+    tlog_info << "getTargetVelocity: " << std::to_string(_sitemp) << std::endl;
+    *targetVelocity = _sitemp;//ma
     return true;
 
 }
@@ -305,8 +305,8 @@ bool ti5Motor::getPosition(int32_t* position)
         tlog_error << "getPosition failed" << std::endl;
         return false;
     }
-    tlog_info << "getPosition: " << std::to_string(_uitemp) << std::endl;
-    *position = _uitemp;//ma
+    tlog_info << "getPosition: " << std::to_string(_sitemp) << std::endl;
+    *position = _sitemp;//ma
     return true;
 }
 bool ti5Motor::getTargetPosition(int32_t* targetPosition)
@@ -316,8 +316,8 @@ bool ti5Motor::getTargetPosition(int32_t* targetPosition)
         tlog_error << "getTargetPosition failed" << std::endl;
         return false;
     }
-    tlog_info << "getTargetPosition: " << std::to_string(_uitemp) << std::endl;
-    *targetPosition = _uitemp;//ma
+    tlog_info << "getTargetPosition: " << std::to_string(_sitemp) << std::endl;
+    *targetPosition = _sitemp;//ma
     return true;
 }
 bool ti5Motor::getErrorStatus(errorStatus* errorStatus)
@@ -327,8 +327,8 @@ bool ti5Motor::getErrorStatus(errorStatus* errorStatus)
         tlog_error << "getErrorStatus failed" << std::endl;
         return false;
     }
-    tlog_info << "getErrorStatus: " << std::to_string(_uitemp) << std::endl;
-    memcpy(errorStatus,&_uitemp,sizeof(*errorStatus));
+    tlog_info << "getErrorStatus: " << std::to_string(_sitemp) << std::endl;
+    memcpy(errorStatus,&_sitemp,sizeof(*errorStatus));
     return true;
 }
 bool ti5Motor::getMotorTemperature(int32_t* motorTemperature)
@@ -338,8 +338,8 @@ bool ti5Motor::getMotorTemperature(int32_t* motorTemperature)
         tlog_error << "getMotorTemperature failed" << std::endl;
         return false;
     }
-    tlog_info << "getMotorTemperature: " << std::to_string(_uitemp) << std::endl;
-    *motorTemperature = _uitemp;
+    tlog_info << "getMotorTemperature: " << std::to_string(_sitemp) << std::endl;
+    *motorTemperature = _sitemp;
     return true;
 }
 bool ti5Motor::getDriverTemperature(int32_t* driverTemperature)
@@ -349,8 +349,8 @@ bool ti5Motor::getDriverTemperature(int32_t* driverTemperature)
         tlog_error << "getDriverTemperature failed" << std::endl;
         return false;
     }
-    tlog_info << "getDriverTemperature: " << std::to_string(_uitemp) << std::endl;
-    *driverTemperature = _uitemp;
+    tlog_info << "getDriverTemperature: " << std::to_string(_sitemp) << std::endl;
+    *driverTemperature = _sitemp;
     return true;
 }//建议使用autoMonitor()
 bool ti5Motor::getCurrentSpeedPosition(currentSpeedPosition* currentSpeedPosition)
@@ -424,6 +424,7 @@ bool ti5Motor::quickMoveRelative(int32_t position)
 {
     int32_t nowPosition = 0;
     getPosition(&nowPosition);
+    usleep(4000);
     return setTargetPosition(nowPosition + position);
 }
 bool ti5Motor::quickMoveRelativeInDegree(int16_t positionInDegree)
@@ -459,6 +460,7 @@ bool ti5Motor::writeRegister(FunctionCodeTabSend1Receive0 code)
     _frameSend.can_id = this->getCanId();
     _frameSend.can_dlc = 1;
     _frameSend.data[0] = static_cast<uint8_t>(code);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -472,6 +474,7 @@ bool ti5Motor::readRegister(FunctionCodeTabSend1Receive4 code)
     _frameSend.can_id = this->getCanId();
     _frameSend.can_dlc = 1;
     _frameSend.data[0] = static_cast<uint8_t>(code);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -483,9 +486,9 @@ bool ti5Motor::readRegister(FunctionCodeTabSend1Receive4 code)
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _uitemp = (_frameReceive.data[1])  | (_frameReceive.data[2] << 8) |( _frameReceive.data[3] << 16 )|(_frameReceive.data[4] << 24) ;
+    _sitemp = (_frameReceive.data[1])  | (_frameReceive.data[2] << 8) |( _frameReceive.data[3] << 16 )|(_frameReceive.data[4] << 24) ;
     tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1])<< std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3]) << std::endl;
-    tlog_debug << "read:" << std::to_string(_uitemp) << std::endl;
+    tlog_debug << "read:" << std::to_string(_sitemp) << std::endl;
     return true;
 }
 
@@ -494,6 +497,7 @@ bool ti5Motor::readRegister(FunctionCodeTabSend1Receive8 code)
     _frameSend.can_id = this->getCanId();
     _frameSend.can_dlc = 1;
     _frameSend.data[0] = static_cast<uint8_t>(code);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -522,6 +526,7 @@ bool ti5Motor::writeRegister(FunctionCodeTabSend5Receive0 code, int32_t value)
     _frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 8);
     _frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 16);
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 24);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -540,6 +545,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t valu
     _frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 8);
     _frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 16);
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 24);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -551,9 +557,9 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t valu
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _uitemp = (_frameReceive.data[1])| (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16)| (_frameReceive.data[4] << 24);
+    _sitemp = (_frameReceive.data[1])| (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16)| (_frameReceive.data[4] << 24);
     tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1]) << std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3]) << std::endl;
-    tlog_debug << "read:" << std::to_string(_uitemp) << std::endl;
+    tlog_debug << "read:" << std::to_string(_sitemp) << std::endl;
     return true;
 }
 bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t value)
@@ -565,6 +571,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t valu
     _frameSend.data[2] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 8);
     _frameSend.data[3] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 16);
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint32_t>(value) >> 24);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -594,6 +601,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t valu
     _frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
     _frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -606,7 +614,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t valu
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _uitemp =  (_frameReceive.data[1]) | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16) | (_frameReceive.data[4] << 24);
+    _sitemp =  (_frameReceive.data[1]) | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16) | (_frameReceive.data[4] << 24);
     tlog_debug << "receive:"
     << std::to_string(_frameReceive.data[0])
     << std::to_string(_frameReceive.data[1])
@@ -614,7 +622,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t valu
     << std::to_string(_frameReceive.data[3])
     << std::to_string(_frameReceive.data[4])
     << std::endl;
-    tlog_debug << "read:" << std::to_string(_uitemp) << std::endl;
+    tlog_debug << "read:" << std::to_string(_sitemp) << std::endl;
     return true;
 }
 bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t value)
@@ -627,6 +635,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t valu
     _frameSend.data[3] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 16);
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
     _frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -656,6 +665,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t valu
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
     _frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
     _frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 40);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -684,6 +694,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t valu
     _frameSend.data[4] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 24);
     _frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
     _frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 40);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;
@@ -696,7 +707,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive6 code, int64_t valu
         return false;
     }
     _ultemp = (_frameReceive.data[1])  | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16)
-              | (_frameReceive.data[4] << 24) | ((_frameReceive.data[5] << 32);
+              | (_frameReceive.data[4] << 24) | (_frameReceive.data[5] << 32);
     tlog_debug << "receive" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[5]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
     return true;
@@ -714,6 +725,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t valu
     _frameSend.data[5] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 32);
     _frameSend.data[6] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 40);
     _frameSend.data[7] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> 48);
+    std::lock_guard<std::mutex> lock(canMutex);
     if(motorCan.sendFrame(_frameSend) == false)
     {
         tlog_error << "send failed" << std::endl;

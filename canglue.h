@@ -56,7 +56,6 @@ public:
             std::cerr << "Socket not initialized" << std::endl;
             return false;
         }
-        std::lock_guard<std::mutex> lock(canMutex);
         if (send(sockCanHandle, &frame, sizeof(frame), 0) < 0)
         {
             std::cerr << "Failed to send CAN frame" << std::endl;
@@ -74,7 +73,6 @@ public:
             return false;
         }
 
-        std::lock_guard<std::mutex> lock(canMutex);
         if (recv(sockCanHandle, &frame, sizeof(frame), 0) < 0)
         {
             std::cerr << "Failed to receive CAN frame" << std::endl;
@@ -85,7 +83,6 @@ public:
 
 private:
 
-    std::mutex canMutex;
     std::string device;
     int sockCanHandle;
 };

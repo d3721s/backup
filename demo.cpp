@@ -4,31 +4,28 @@ int main(int argc, char *argv[])
 {
 int tempPosition;
     ti5Motor ti5Motor1(1, ti5Motor::reductionRatio::reductionRatio101);
+    usleep(400000);
     ti5Motor1.setCleanError();
+    usleep(400000);
     ti5Motor ti5Motor2(2, ti5Motor::reductionRatio::reductionRatio101);
+    usleep(400000);
     ti5Motor2.setCleanError();
+    usleep(400000);
 
     ti5Motor ti5Motor3(3, ti5Motor::reductionRatio::reductionRatio81);
+    usleep(400000);
     ti5Motor3.setCleanError();
+    usleep(400000);
     ti5Motor ti5Motor4(4, ti5Motor::reductionRatio::reductionRatio81);
+    usleep(400000);
     ti5Motor4.setCleanError();
+    usleep(400000);
     ti5Motor ti5Motor5(5, ti5Motor::reductionRatio::reductionRatio51);
+    usleep(400000);
     ti5Motor5.setCleanError();
+    usleep(400000);
     sleep(5);
-//    while(1)
-//    {
-//     ti5Motor1.setTargetPosition(1654784);
-//     sleep(5);
-//     ti5Motor1.getPosition(&tempPosition);
-//        printf("%d should = 1654784\n",tempPosition);
-//        sleep(2);
-//    ti5Motor1.readRegister(ti5Motor::FunctionCodeTabSend1Receive8::getCurrentSpeedPositionCode);
-//    sleep(5);
-//
-//    ti5Motor::errorStatus es;
-//    ti5Motor1.getErrorStatus(&es);
-//    sleep(2);
-//    }
+
     while(1)
     {
         ti5Motor1.quickHome();
@@ -44,18 +41,20 @@ int tempPosition;
 
         sleep(5);
 
-        ti5Motor1.quickMoveAbsoluteInDegree(45);
+        ti5Motor1.quickMoveAbsoluteInDegree(30);
         usleep(400000);
-        ti5Motor2.quickMoveRelativeInDegree(45);
+        ti5Motor2.quickMoveAbsoluteInDegree(30);
         usleep(400000);
-        ti5Motor3.quickMoveRelativeInDegree(45);
+        ti5Motor3.quickMoveAbsoluteInDegree(30);
         usleep(400000);
-        ti5Motor4.quickMoveRelativeInDegree(45);
+        ti5Motor4.quickMoveAbsoluteInDegree(30);
         usleep(400000);
-        ti5Motor5.quickMoveRelativeInDegree(45);
+        ti5Motor5.quickMoveAbsoluteInDegree(30);
         usleep(400000);
-        
+        ti5Motor1.quickMoveRelativeInDegree(45);
+        usleep(400000);
         sleep(5);
+
     }
 
     return 0;
