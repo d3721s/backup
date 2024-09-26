@@ -50,7 +50,7 @@ public:
 
     bool sendFrame(const can_frame &frame)
     {
-        usleep(4000);
+        usleep(40000);
         if (sockCanHandle == -1)
         {
             std::cerr << "Socket not initialized" << std::endl;
@@ -66,7 +66,6 @@ public:
 
     bool receiveFrame(can_frame &frame)
     {
-        usleep(4000);
         if (sockCanHandle == -1)
         {
             std::cerr << "Socket not initialized" << std::endl;

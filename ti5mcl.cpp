@@ -133,6 +133,7 @@ static void logInit(void)
         tlog_setlevel(TI5MCLLOGLEVEL);
     });
 }
+
 CanBus motorCan(CANDEVICE);
 static void canInit(void)
 {
@@ -157,11 +158,34 @@ ti5Motor::ti5Motor(void)
 
 ti5Motor::ti5Motor(uint8_t canId, reductionRatio reductionRatioValue)
 {
+    _deviceData->setCanId(canId);
     _canId = canId;
-    _reductionRatio=reductionRatioValue;
+    _deviceData->setReductionRatio(static_cast<uint8_t>(reductionRatioValue));
+    _reductionRatio = reductionRatioValue;
+
     logInit();
     canInit();
     writeRegister(FunctionCodeTabSend1Receive0::setRestoreFromFlashCode);
+    _deviceData->setName(std::string("ti5Motor") + std::to_string(canId));
+    int32_t maxPositiveCurrent, maxNegativeCurrent, maxPositiveAcceleration, maxNegativeAcceleration, maxPositivePositon, maxNegativePositon, maxPositiveVelocity, maxNegativeVelocity, positionOffset;
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveCurrentCode, &maxPositiveCurrent);
+    _deviceData->setsetMaxPositiveCurrent(maxPositiveCurrent);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeCurrentCode, &maxNegativeCurrent);
+    _deviceData->setMaxNegativeCurrent(maxNegativeCurrent);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveAccelerationCode, &maxPositiveAcceleration);
+    _deviceData->setMaxPositiveAcceleration(maxPositiveAcceleration);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeAccelerationCode, &maxNegativeAcceleration);
+    _deviceData->setMaxNegativeAcceleration(maxNegativeAcceleration);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositivePositonCode, &maxPositivePositon);
+    _deviceData->setMaxPositivePositon(maxPositivePositon);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativePositonCode, &maxNegativePositon);
+    _deviceData->setMaxNegativePositon(maxNegativePositon);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxPositiveVelocityCode, &maxPositiveVelocity);
+    _deviceData->setMaxPositiveVelocity(maxPositiveVelocity);
+    readRegister(FunctionCodeTabSend1Receive4::getMaxNegativeVelocityCode, &maxNegativeVelocity);
+    _deviceData->setMaxNegativeVelocity(maxNegativeVelocity);
+    readRegister(FunctionCodeTabSend1Receive4::getPositionOffsetCode, &positionOffset)
+    _deviceData->setPositionOffset(positionOffset);
     tlog_info << "ti5Motor(canid:" << std::to_string(canId) << ") created using hardware settings" << std::endl;
 }
 
@@ -170,7 +194,7 @@ ti5Motor::ti5Motor(uint8_t canId, ti5MotorSetupData *deviceData)
     _deviceData = deviceData;
     logInit();
     canInit();
-//    setCanId(_deviceData->getCanId());
+    //    setCanId(_deviceData->getCanId());
 
     tlog_info << "ti5Motor created canID:" << std::to_string(deviceData->getCanId()) << " name:" << deviceData->getName() << "using software settings" << std::endl;
 }
@@ -188,9 +212,9 @@ ti5Motor::reductionRatio ti5Motor::getReductionRatio(void)
 /// @brief
 /// @param
 /// @return
-bool ti5Motor::getMotorMode(MotorMode* mode)
+bool ti5Motor::getMotorMode(MotorMode *mode)
 {
-    if(readRegister(FunctionCodeTabSend1Receive4::getModeCode)==false)
+    if(readRegister(FunctionCodeTabSend1Receive4::getModeCode) == false)
     {
         tlog_error << "getMotorMode failed" << std::endl;
         return false;
@@ -202,7 +226,7 @@ bool ti5Motor::getMotorMode(MotorMode* mode)
 bool ti5Motor::setMotorMode(MotorMode mode)
 {
     MotorMode oldMode;
-    if(getMotorMode(&oldMode)==false)
+    if(getMotorMode(&oldMode) == false)
         return false;
     if(mode != oldMode)
     {
@@ -210,34 +234,34 @@ bool ti5Motor::setMotorMode(MotorMode mode)
         {
         case MotorMode::modeStop:
             if(writeRegister(FunctionCodeTabSend1Receive0::setStopModeCode) == false)
-        {
-            tlog_error << "setMotorMode failed" << std::endl;
-            return false;
-        }
+            {
+                tlog_error << "setMotorMode failed" << std::endl;
+                return false;
+            }
         case MotorMode::modeCurrent:
             if(writeRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, 0) == false)
-        {
-            tlog_error << "setMotorMode failed" << std::endl;
-            return false;
-        }
+            {
+                tlog_error << "setMotorMode failed" << std::endl;
+                return false;
+            }
         case MotorMode::modeVelocity:
             if(writeRegister(FunctionCodeTabSend5Receive0::setVelocityModeCode, 0) == false)
-        {
-            tlog_error << "setMotorMode failed" << std::endl;
-            return false;
-        }
+            {
+                tlog_error << "setMotorMode failed" << std::endl;
+                return false;
+            }
         case MotorMode::modePosition:
             if(writeRegister(FunctionCodeTabSend5Receive0::setPositionModeCode, 0) == false)
-        {
-            tlog_error << "setMotorMode failed" << std::endl;
-            return false;
-        }
+            {
+                tlog_error << "setMotorMode failed" << std::endl;
+                return false;
+            }
         default:
             tlog_error << "unsupported mode:" << std::to_string(static_cast<uint8_t> (mode)) << std::endl;
             return false;
         }
         MotorMode newMode;
-        if(getMotorMode(&newMode)==false)
+        if(getMotorMode(&newMode) == false)
         {
             tlog_error << "setMotorMode failed" << std::endl;
             return false;
@@ -252,7 +276,7 @@ bool ti5Motor::setMotorMode(MotorMode mode)
     return true;
 }
 
-bool ti5Motor::getCurrent(int32_t* current)
+bool ti5Motor::getCurrent(int32_t *current)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getCurrentCode) == false)
     {
@@ -263,7 +287,7 @@ bool ti5Motor::getCurrent(int32_t* current)
     *current = _sitemp;//ma
     return true;
 }
-bool ti5Motor::getTargetCurrent(int32_t* current)
+bool ti5Motor::getTargetCurrent(int32_t *current)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getTargetCurrentCode) == false)
     {
@@ -275,7 +299,7 @@ bool ti5Motor::getTargetCurrent(int32_t* current)
     return true;
 
 }
-bool ti5Motor::getVelocity(int32_t* velocity)
+bool ti5Motor::getVelocity(int32_t *velocity)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getVelocityCode) == false)
     {
@@ -286,7 +310,7 @@ bool ti5Motor::getVelocity(int32_t* velocity)
     *velocity = _sitemp;//ma
     return true;
 }
-bool ti5Motor::getTargetVelocity(int32_t*   targetVelocity)
+bool ti5Motor::getTargetVelocity(int32_t   *targetVelocity)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getTargetVelocityCode) == false)
     {
@@ -298,7 +322,7 @@ bool ti5Motor::getTargetVelocity(int32_t*   targetVelocity)
     return true;
 
 }
-bool ti5Motor::getPosition(int32_t* position)
+bool ti5Motor::getPosition(int32_t *position)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getPositionCode) == false)
     {
@@ -309,7 +333,7 @@ bool ti5Motor::getPosition(int32_t* position)
     *position = _sitemp;//ma
     return true;
 }
-bool ti5Motor::getTargetPosition(int32_t* targetPosition)
+bool ti5Motor::getTargetPosition(int32_t *targetPosition)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getTargetPositionCode) == false)
     {
@@ -320,7 +344,7 @@ bool ti5Motor::getTargetPosition(int32_t* targetPosition)
     *targetPosition = _sitemp;//ma
     return true;
 }
-bool ti5Motor::getErrorStatus(errorStatus* errorStatus)
+bool ti5Motor::getErrorStatus(errorStatus *errorStatus)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getErrorCode) == false)
     {
@@ -328,10 +352,10 @@ bool ti5Motor::getErrorStatus(errorStatus* errorStatus)
         return false;
     }
     tlog_info << "getErrorStatus: " << std::to_string(_sitemp) << std::endl;
-    memcpy(errorStatus,&_sitemp,sizeof(*errorStatus));
+    memcpy(errorStatus, &_sitemp, sizeof(*errorStatus));
     return true;
 }
-bool ti5Motor::getMotorTemperature(int32_t* motorTemperature)
+bool ti5Motor::getMotorTemperature(int32_t *motorTemperature)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getMotorTemperatureCode) == false)
     {
@@ -342,7 +366,7 @@ bool ti5Motor::getMotorTemperature(int32_t* motorTemperature)
     *motorTemperature = _sitemp;
     return true;
 }
-bool ti5Motor::getDriverTemperature(int32_t* driverTemperature)
+bool ti5Motor::getDriverTemperature(int32_t *driverTemperature)
 {
     if(readRegister(FunctionCodeTabSend1Receive4::getDriverTemperatureCode) == false)
     {
@@ -353,7 +377,8 @@ bool ti5Motor::getDriverTemperature(int32_t* driverTemperature)
     *driverTemperature = _sitemp;
     return true;
 }//建议使用autoMonitor()
-bool ti5Motor::getCurrentSpeedPosition(currentSpeedPosition* currentSpeedPosition)
+
+bool ti5Motor::getCurrentSpeedPosition(currentSpeedPosition *currentSpeedPosition)
 {
 
 
@@ -362,7 +387,9 @@ bool ti5Motor::getCurrentSpeedPosition(currentSpeedPosition* currentSpeedPositio
 
 bool ti5Motor::setTargetCurrent(int32_t targetCurrent)
 {
-    if(writeRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, targetCurrent)==false)
+    targetCurrent = std::max(targetCurrent, _deviceData->getMaxNegativeCurrent());
+    targetCurrent = std::min(targetCurrent, _deviceData->getMaxPositiveCurrent());
+    if(writeRegister(FunctionCodeTabSend5Receive0::setCurrentModeCode, targetCurrent) == false)
     {
         tlog_error << "setTargetCurrent failed" << std::endl;
         return false;
@@ -374,7 +401,9 @@ bool ti5Motor::setTargetCurrent(int32_t targetCurrent)
 }
 bool ti5Motor::setTargetVelocity(int32_t targetVelocity)
 {
-    if(writeRegister(FunctionCodeTabSend5Receive0::setVelocityModeCode, targetVelocity)==false)
+    targetVelocity = std::max(targetVelocity, _deviceData->getMaxNegativeVelocity());
+    targetVelocity = std::min(targetVelocity, _deviceData->getMaxPositiveVelocity());
+    if(writeRegister(FunctionCodeTabSend5Receive0::setVelocityModeCode, targetVelocity) == false)
     {
         tlog_error << "setTargetVelocity failed" << std::endl;
         return false;
@@ -384,7 +413,9 @@ bool ti5Motor::setTargetVelocity(int32_t targetVelocity)
 }
 bool ti5Motor::setTargetPosition(int32_t targetPosition)
 {
-    if(writeRegister(FunctionCodeTabSend5Receive0::setPositionModeCode, targetPosition)==false)
+    targetPosition = std::max(targetPosition, _deviceData->getMaxNegativePositon());
+    targetPosition = std::min(targetPosition, _deviceData->getMaxPositivePositon());
+    if(writeRegister(FunctionCodeTabSend5Receive0::setPositionModeCode, targetPosition) == false)
     {
         tlog_error << "setTargetPosition failed" << std::endl;
         return false;
@@ -394,7 +425,7 @@ bool ti5Motor::setTargetPosition(int32_t targetPosition)
 }
 bool ti5Motor::setCleanError()
 {
-    if(writeRegister(FunctionCodeTabSend1Receive0::setCleanErrorCode)==false)
+    if(writeRegister(FunctionCodeTabSend1Receive0::setCleanErrorCode) == false)
     {
         tlog_error << "setCleanError failed" << std::endl;
         return false;
@@ -418,18 +449,17 @@ bool ti5Motor::quickMoveAbsolute(int32_t position)
 }
 bool ti5Motor::quickMoveAbsoluteInDegree(int16_t positionInDegree)
 {
-    return quickMoveAbsolute(positionInDegree *(static_cast<uint8_t>(_reductionRatio) << 13) /45);
+    return quickMoveAbsolute(positionInDegree * (static_cast<uint8_t>(_reductionRatio) << 13) / 45);
 }
 bool ti5Motor::quickMoveRelative(int32_t position)
 {
     int32_t nowPosition = 0;
     getPosition(&nowPosition);
-    usleep(4000);
     return setTargetPosition(nowPosition + position);
 }
 bool ti5Motor::quickMoveRelativeInDegree(int16_t positionInDegree)
 {
-    return quickMoveRelative(positionInDegree *(static_cast<uint8_t>(_reductionRatio) << 13) /45);
+    return quickMoveRelative(positionInDegree * (static_cast<uint8_t>(_reductionRatio) << 13) / 45);
 }
 bool ti5Motor::quickMoveVelocity(int32_t velocity)
 {
@@ -438,7 +468,7 @@ bool ti5Motor::quickMoveVelocity(int32_t velocity)
 bool ti5Motor::quickMoveVelocityInDegree(int16_t perSecondInDegree)
 {
 #warning "TODO:wrong!"
-    return quickMoveVelocity(perSecondInDegree *(static_cast<uint8_t>(_reductionRatio) << 13) /45);
+    return quickMoveVelocity(perSecondInDegree * (static_cast<uint8_t>(_reductionRatio) << 13) / 45);
 }
 bool ti5Motor::quickMoveJog()
 {
@@ -486,8 +516,8 @@ bool ti5Motor::readRegister(FunctionCodeTabSend1Receive4 code)
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _sitemp = (_frameReceive.data[1])  | (_frameReceive.data[2] << 8) |( _frameReceive.data[3] << 16 )|(_frameReceive.data[4] << 24) ;
-    tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1])<< std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3]) << std::endl;
+    _sitemp = (_frameReceive.data[1])  | (_frameReceive.data[2] << 8) | ( _frameReceive.data[3] << 16 ) | (_frameReceive.data[4] << 24) ;
+    tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1]) << std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3]) << std::endl;
     tlog_debug << "read:" << std::to_string(_sitemp) << std::endl;
     return true;
 }
@@ -509,10 +539,10 @@ bool ti5Motor::readRegister(FunctionCodeTabSend1Receive8 code)
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _ultemp = (_frameReceive.data[0])| (_frameReceive.data[1] << 8) | (_frameReceive.data[2] << 16) | (_frameReceive.data[3] << 24)
+    _ultemp = (_frameReceive.data[0]) | (_frameReceive.data[1] << 8) | (_frameReceive.data[2] << 16) | (_frameReceive.data[3] << 24)
               | (_frameReceive.data[4] << 32) | (_frameReceive.data[5] << 40) | (_frameReceive.data[6] << 48) | (_frameReceive.data[7] << 56);
     tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1]) << std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3])
-    << std::to_string(_frameReceive.data[4]) << std::to_string(_frameReceive.data[5]) << std::to_string(_frameReceive.data[6]) << std::to_string(_frameReceive.data[7]) << std::endl;
+               << std::to_string(_frameReceive.data[4]) << std::to_string(_frameReceive.data[5]) << std::to_string(_frameReceive.data[6]) << std::to_string(_frameReceive.data[7]) << std::endl;
     tlog_debug << "read:" << std::to_string(_ultemp) << std::endl;
     return true;
 } // csp
@@ -557,7 +587,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive4 code, int32_t valu
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _sitemp = (_frameReceive.data[1])| (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16)| (_frameReceive.data[4] << 24);
+    _sitemp = (_frameReceive.data[1]) | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16) | (_frameReceive.data[4] << 24);
     tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1]) << std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3]) << std::endl;
     tlog_debug << "read:" << std::to_string(_sitemp) << std::endl;
     return true;
@@ -583,10 +613,10 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend5Receive8 code, int32_t valu
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _ultemp = (_frameReceive.data[0])| (_frameReceive.data[1] << 8) | (_frameReceive.data[2] << 16) | (_frameReceive.data[3] << 24)
+    _ultemp = (_frameReceive.data[0]) | (_frameReceive.data[1] << 8) | (_frameReceive.data[2] << 16) | (_frameReceive.data[3] << 24)
               | (_frameReceive.data[4] << 32) | (_frameReceive.data[5] << 40) | (_frameReceive.data[6] << 48) | (_frameReceive.data[7] << 56);
-    tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1]) << std::to_string(_frameReceive.data[2])<< std::to_string(_frameReceive.data[3])
-    << std::to_string(_frameReceive.data[4]) << std::to_string(_frameReceive.data[5]) << std::to_string(_frameReceive.data[6]) << std::to_string(_frameReceive.data[7]) << std::endl;
+    tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << std::to_string(_frameReceive.data[1]) << std::to_string(_frameReceive.data[2]) << std::to_string(_frameReceive.data[3])
+               << std::to_string(_frameReceive.data[4]) << std::to_string(_frameReceive.data[5]) << std::to_string(_frameReceive.data[6]) << std::to_string(_frameReceive.data[7]) << std::endl;
     tlog_debug << "read:" << std::to_string(_ultemp) << std::endl;
     return true;
 }
@@ -616,12 +646,12 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive4 code, int64_t valu
     }
     _sitemp =  (_frameReceive.data[1]) | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16) | (_frameReceive.data[4] << 24);
     tlog_debug << "receive:"
-    << std::to_string(_frameReceive.data[0])
-    << std::to_string(_frameReceive.data[1])
-    << std::to_string(_frameReceive.data[2])
-    << std::to_string(_frameReceive.data[3])
-    << std::to_string(_frameReceive.data[4])
-    << std::endl;
+               << std::to_string(_frameReceive.data[0])
+               << std::to_string(_frameReceive.data[1])
+               << std::to_string(_frameReceive.data[2])
+               << std::to_string(_frameReceive.data[3])
+               << std::to_string(_frameReceive.data[4])
+               << std::endl;
     tlog_debug << "read:" << std::to_string(_sitemp) << std::endl;
     return true;
 }
@@ -648,7 +678,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend6Receive7 code, int64_t valu
         return false;
     }
     _ultemp = (_frameReceive.data[1]) | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16)
-              | (_frameReceive.data[4] << 24) | (_frameReceive.data[5] << 32) |( _frameReceive.data[6] << 40);
+              | (_frameReceive.data[4] << 24) | (_frameReceive.data[5] << 32) | ( _frameReceive.data[6] << 40);
     tlog_debug << "receive:" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[6]) << std::endl;
     tlog_debug << "read:" << std::to_string(_ultemp) << std::endl;
     return true;
@@ -678,7 +708,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend7Receive5 code, int64_t valu
         return false;
     }
     _ultemp = (_frameReceive.data[1])  | (_frameReceive.data[2] << 8) | (_frameReceive.data[3] << 16)
-              | (_frameReceive.data[4] << 24)|(_frameReceive.data[5] << 32);
+              | (_frameReceive.data[4] << 24) | (_frameReceive.data[5] << 32);
     tlog_debug << "receive" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[4]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;
     return true;
@@ -737,7 +767,7 @@ bool ti5Motor::writeReadRegister(FunctionCodeTabSend8Receive8 code, int64_t valu
         tlog_error << "receive failed" << std::endl;
         return false;
     }
-    _ultemp = (_frameReceive.data[0])|_frameReceive.data[1] << 8 | (_frameReceive.data[2] << 16) | (_frameReceive.data[3] << 24)
+    _ultemp = (_frameReceive.data[0]) | _frameReceive.data[1] << 8 | (_frameReceive.data[2] << 16) | (_frameReceive.data[3] << 24)
               | (_frameReceive.data[4] << 32) | (_frameReceive.data[5] << 40) | (_frameReceive.data[6] << 48) | (_frameReceive.data[7] << 56);
     tlog_debug << "receive" << std::to_string(_frameReceive.data[0]) << "..." << std::to_string(_frameReceive.data[7]) << std::endl;
     tlog_debug << "read" << std::to_string(_ultemp) << std::endl;

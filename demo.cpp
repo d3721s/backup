@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-int tempPosition;
+    int tempPosition;
     ti5Motor ti5Motor1(1, ti5Motor::reductionRatio::reductionRatio101);
     usleep(400000);
     ti5Motor1.setCleanError();
